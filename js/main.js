@@ -36,13 +36,13 @@
      Menu data (real Brindi's menu)
   ---------------------------------------------------------- */
   var MEZZE = [
-    {name:"Hummus",            desc:"Chickpea, olive oil, garlic, lemon &amp; tahini — classic or spiced.", price:9,  tag:"VG", icon:"bowl",     photo:"hummus.jpg"},
-    {name:"Baba Ghanoush",     desc:"Roasted eggplant whipped with yogurt, tahini, garlic &amp; lemon.",     price:9,  tag:"VG", icon:"eggplant", photo:"baba-ghanoush.jpg"},
-    {name:"Dolmas",            desc:"House-made grape leaves, rolled by hand around herbed rice.",           price:9,  tag:"VG", icon:"leaf",     photo:"dolmas.jpg"},
-    {name:"Tabbouleh",         desc:"Cracked wheat, parsley, green onion, tomato &amp; bright lemon.",       price:9,  tag:"VG", icon:"wheat",    photo:"tabbouleh.jpg"},
-    {name:"Eggplant Shakshuka",desc:"Wood-fired eggplant simmered with tomato, peppers, garlic &amp; lemon.",price:9,  tag:"VT", icon:"flame",    photo:"eggplant-shakshuka.jpg"},
-    {name:"Garlic Shrimp",     desc:"Wood-fired shrimp in a glossy garlic-lemon sauce.",                    price:17, tag:"",   icon:"shrimp",   photo:"garlic-shrimp.jpg"},
-    {name:"Stuffed Mushrooms", desc:"Caps filled with garlic ricotta &amp; lemon, kissed by flame.",         price:17, tag:"VT", icon:"mushroom", photo:"stuffed-mushrooms.jpg"}
+    {name:"Hummus",            desc:"Chickpea, olive oil, garlic, lemon &amp; tahini — classic or spiced.", price:9,  tag:"VG", icon:"bowl",     photo:"hummus.webp"},
+    {name:"Baba Ghanoush",     desc:"Roasted eggplant whipped with yogurt, tahini, garlic &amp; lemon.",     price:9,  tag:"VG", icon:"eggplant", photo:"baba-ghanoush.webp"},
+    {name:"Dolmas",            desc:"House-made grape leaves, rolled by hand around herbed rice.",           price:9,  tag:"VG", icon:"leaf",     photo:"dolmas.webp"},
+    {name:"Tabbouleh",         desc:"Cracked wheat, parsley, green onion, tomato &amp; bright lemon.",       price:9,  tag:"VG", icon:"wheat",    photo:"tabbouleh.webp"},
+    {name:"Eggplant Shakshuka",desc:"Wood-fired eggplant simmered with tomato, peppers, garlic &amp; lemon.",price:9,  tag:"VT", icon:"flame",    photo:"eggplant-shakshuka.webp"},
+    {name:"Garlic Shrimp",     desc:"Wood-fired shrimp in a glossy garlic-lemon sauce.",                    price:17, tag:"",   icon:"shrimp",   photo:"garlic-shrimp.webp"},
+    {name:"Stuffed Mushrooms", desc:"Caps filled with garlic ricotta &amp; lemon, kissed by flame.",         price:17, tag:"VT", icon:"mushroom", photo:"stuffed-mushrooms.webp"}
   ];
   var ENTREES = [
     {name:"Chicken Shish Kebab", price:20, note:"Wood-fired · rice or salad · yogurt sauce"},

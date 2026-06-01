@@ -205,6 +205,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
   transition:opacity .9s var(--ease-brindi);z-index:2}
 .photo-slot img.loaded{opacity:1}
+/* Mezze cards: the cut-out dish floats on the section background (transparent WebP),
+   no frame/box — just a soft contact shadow under the food itself. */
+.dish-card .photo-slot{background:none;box-shadow:none;border-radius:0;overflow:visible}
+.dish-card .photo-slot .ph{display:none}
+.dish-card .photo-slot img{object-fit:contain;
+  filter:drop-shadow(0 20px 22px rgba(42,17,29,.28))}
 
 /* =========================================================
    ACT 4 — FROM THE WOODFIRE (dark)
