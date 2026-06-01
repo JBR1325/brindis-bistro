@@ -8,6 +8,7 @@
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var smoother = null;
   var normalizer = null;   // GSAP touch-scroll normalizer (created alongside the smoother)
+  var PHOTOS_VER = "2";    // bump when dish photos change -> cache-busts the cached image URLs
 
   /* ----------------------------------------------------------
      Line-icon set (subtle placeholders inside photo-slots)
@@ -78,7 +79,7 @@
   function photoSlot(file, alt, ratio, icon){
     return '<div class="photo-slot '+ratio+'">'
       + '<div class="ph">'+svg(icon)+'<span class="ph-tag">Brindi’s</span></div>'
-      + '<img src="assets/photos/'+file+'" alt="'+alt+'" loading="lazy" '
+      + '<img src="assets/photos/'+file+'?v='+PHOTOS_VER+'" alt="'+alt+'" loading="lazy" '
       + 'onload="this.classList.add(\'loaded\')" onerror="this.remove()">'
       + '</div>';
   }
