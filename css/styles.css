@@ -1,0 +1,419 @@
+/* =========================================================
+   BRINDI'S BISTRO — Woodfire & Wine
+   Editorial Mediterranean luxury · GSAP scrollytelling
+   ========================================================= */
+
+:root{
+  --plum:#4A1E33;
+  --plum-deep:#2A111D;
+  --plum-ink:#1c0b13;
+  --wine:#7A2E48;
+  --terracotta:#C2683D;
+  --saffron:#D2A24C;
+  --gold:#E4BB6A;
+  --olive:#6E7544;
+  --cream:#F6EFE3;
+  --cream-2:#EFE4D2;
+  --cream-3:#E7D8BF;
+  --ink:#241319;
+  --jb-red:#E8202A;
+  --yolk:#F2B441;
+
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Jost",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  --ease-brindi:cubic-bezier(.16,1,.3,1);
+  --maxw:1280px;
+  --pad:clamp(20px,5vw,80px);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+em{font-style:italic}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--saffron);color:var(--plum-deep)}
+
+/* ScrollSmoother needs these */
+#smooth-wrapper{overflow:hidden}
+#smooth-content{will-change:transform}
+
+/* ---------- shared type ---------- */
+.kicker{
+  font-family:var(--sans);
+  font-weight:500;
+  font-size:clamp(.7rem,1vw,.82rem);
+  letter-spacing:.42em;
+  text-transform:uppercase;
+  color:var(--terracotta);
+}
+.kicker.light{color:var(--gold)}
+.sect-title{
+  font-family:var(--serif);
+  font-weight:400;
+  line-height:.95;
+  letter-spacing:-.015em;
+  font-size:clamp(2.6rem,8vw,6rem);
+  color:var(--plum);
+}
+.sect-title.huge{font-size:clamp(3rem,11vw,8.5rem)}
+.sect-title em{color:var(--terracotta)}
+.sect-lede{
+  max-width:46ch;
+  font-size:clamp(1rem,1.5vw,1.22rem);
+  font-weight:300;
+  line-height:1.65;
+  color:color-mix(in srgb,var(--ink) 78%,transparent);
+}
+.sect-lede.light{color:color-mix(in srgb,var(--cream) 80%,transparent)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad);width:100%}
+
+/* ---------- grain + progress + sound ---------- */
+.grain{
+  position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+.scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:95;background:color-mix(in srgb,var(--plum) 12%,transparent)}
+.scroll-progress i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--saffron),var(--terracotta),var(--wine))}
+.sound-toggle{
+  position:fixed;top:18px;right:18px;z-index:96;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;color:var(--plum);
+  background:color-mix(in srgb,var(--cream) 70%,transparent);backdrop-filter:blur(6px);
+  border:1px solid color-mix(in srgb,var(--plum) 22%,transparent);transition:.3s var(--ease-brindi);
+}
+.sound-toggle:hover{background:var(--plum);color:var(--cream)}
+.sound-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sound-toggle .ico-sound path:first-child,.sound-toggle .ico-muted path:first-child{fill:currentColor;stroke:none}
+.sound-toggle .ico-muted{display:none}
+.sound-toggle[aria-pressed="true"] .ico-sound{display:none}
+.sound-toggle[aria-pressed="true"] .ico-muted{display:block}
+
+/* ---------- preloader ---------- */
+.preloader{position:fixed;inset:0;z-index:100;background:var(--plum-deep);
+  display:grid;place-items:center;color:var(--cream)}
+.pre-inner{display:flex;flex-direction:column;align-items:center;gap:.6rem;text-align:center}
+.pre-mark{font-family:var(--serif);font-size:clamp(4rem,14vw,9rem);line-height:1;color:var(--gold);
+  font-weight:400}
+.pre-word{font-family:var(--sans);letter-spacing:.55em;font-size:clamp(.8rem,2vw,1.1rem);
+  text-indent:.55em;color:var(--cream)}
+.pre-rule{display:block;width:min(46vw,260px);height:1px;background:color-mix(in srgb,var(--gold) 40%,transparent);position:relative;overflow:hidden}
+.pre-rule i{position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:0 50%}
+.pre-sub{font-family:var(--serif);font-style:italic;font-size:clamp(.85rem,1.4vw,1.05rem);
+  color:color-mix(in srgb,var(--cream) 70%,transparent)}
+
+/* =========================================================
+   ACT 1 — HERO
+   ========================================================= */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 50% 8%, #fbf5ea 0%, var(--cream) 42%, var(--cream-2) 100%);
+}
+.hero-emblem{position:absolute;width:min(120vh,1100px);aspect-ratio:1;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--plum) 9%,transparent);
+  top:50%;left:50%;translate:-50% -50%;
+  box-shadow:0 0 0 40px color-mix(in srgb,var(--plum) 3%,transparent) inset}
+.hero-inner{position:relative;z-index:2;text-align:center;padding-inline:var(--pad);display:flex;flex-direction:column;align-items:center}
+.hero-kicker{margin-bottom:2.2rem}
+.hero-logo{width:min(80vw,520px);height:auto;margin-bottom:1.4rem}
+.hero-title{font-family:var(--serif);font-weight:300;color:var(--plum);
+  font-size:clamp(2.6rem,9.5vw,8rem);line-height:.92;letter-spacing:-.02em}
+.hero-title .line{display:block;overflow:hidden}
+.hero-title em{color:var(--terracotta);font-weight:400}
+.hero-tag{margin-top:1.8rem;font-size:clamp(.85rem,1.4vw,1.05rem);letter-spacing:.18em;
+  text-transform:uppercase;font-weight:400;color:color-mix(in srgb,var(--ink) 62%,transparent)}
+.scroll-cue{position:absolute;bottom:26px;left:50%;translate:-50% 0;z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--terracotta)}
+.scroll-cue i{width:1px;height:40px;background:linear-gradient(var(--terracotta),transparent);position:relative;overflow:hidden}
+.scroll-cue i::after{content:'';position:absolute;top:-40px;left:0;width:1px;height:40px;background:var(--plum);
+  animation:cue 2.2s var(--ease-brindi) infinite}
+@keyframes cue{0%{transform:translateY(0)}60%,100%{transform:translateY(80px)}}
+
+.ember-field{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.ember{position:absolute;bottom:-10px;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle,var(--gold),var(--terracotta));filter:blur(.4px);opacity:0}
+
+/* =========================================================
+   ACT 2 — THE FIRE (pinned story)
+   ========================================================= */
+.fire{position:relative;min-height:100svh;background:
+   radial-gradient(120% 80% at 50% 120%, #3a1626 0%, var(--plum-deep) 60%, #170810 100%);
+   color:var(--cream);overflow:hidden}
+.fire-stage{position:absolute;inset:0;display:grid;place-items:center;padding:var(--pad)}
+.fire-line{position:absolute;max-width:min(92vw,1000px);text-align:center;opacity:0}
+.fire-line .t{font-family:var(--serif);font-weight:300;line-height:1.06;
+  font-size:clamp(1.9rem,6vw,5rem);letter-spacing:-.01em;color:var(--cream)}
+.fire-line em{color:var(--gold);font-weight:400}
+.fire-glow{position:absolute;left:50%;bottom:-30%;translate:-50% 0;width:80vw;height:80vw;
+  background:radial-gradient(circle,color-mix(in srgb,var(--terracotta) 55%,transparent),transparent 60%);
+  filter:blur(40px);opacity:.5;pointer-events:none}
+
+/* =========================================================
+   ACT 3 — MEZZE (horizontal pin)
+   ========================================================= */
+.mezze{background:linear-gradient(var(--cream),var(--cream-2));position:relative}
+.mezze-viewport{height:100svh;overflow:hidden;display:flex;align-items:center}
+.mezze-track{display:flex;align-items:center;gap:clamp(28px,4vw,64px);padding-inline:var(--pad);will-change:transform}
+.mezze-intro{flex:0 0 auto;width:min(78vw,440px);padding-right:2vw}
+.mezze-intro .sect-title{margin:.2rem 0 1.2rem}
+.drag-hint{display:inline-block;margin-top:1.6rem;font-size:.72rem;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--terracotta);font-weight:500}
+
+.dish-card{flex:0 0 auto;width:min(74vw,330px);position:relative}
+.dish-card .idx{font-family:var(--serif);font-size:.95rem;color:var(--terracotta);
+  display:block;margin-bottom:.7rem;letter-spacing:.1em}
+.dish-card .photo-slot{margin-bottom:1.1rem}
+.dish-name{font-family:var(--serif);font-weight:400;color:var(--plum);
+  font-size:clamp(1.5rem,2.4vw,2rem);line-height:1.04;margin-bottom:.5rem}
+.dish-desc{font-size:.95rem;font-weight:300;line-height:1.55;
+  color:color-mix(in srgb,var(--ink) 72%,transparent);max-width:34ch}
+.dish-foot{display:flex;align-items:baseline;justify-content:space-between;margin-top:.9rem;
+  border-top:1px solid color-mix(in srgb,var(--plum) 16%,transparent);padding-top:.7rem}
+.dish-price{font-family:var(--serif);font-size:1.5rem;color:var(--terracotta)}
+.tag{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;font-weight:500;
+  color:var(--olive);border:1px solid color-mix(in srgb,var(--olive) 45%,transparent);
+  padding:.2em .6em;border-radius:2em}
+.dish-card:nth-child(even){transform:translateY(38px)}
+
+/* photo-slot (swap-ready placeholder) */
+.photo-slot{position:relative;overflow:hidden;border-radius:3px;isolation:isolate;
+  background:var(--plum-deep);box-shadow:0 24px 50px -28px rgba(42,17,29,.6)}
+.photo-slot.r45{aspect-ratio:4/5}
+.photo-slot.r169{aspect-ratio:16/9}
+.photo-slot .ph{position:absolute;inset:0;display:grid;place-items:center;
+  background:
+    radial-gradient(120% 120% at 28% 18%, color-mix(in srgb,var(--saffron) 42%,transparent), transparent 58%),
+    linear-gradient(150deg, var(--wine) 0%, var(--plum) 55%, var(--plum-deep) 100%)}
+.photo-slot .ph::after{content:'';position:absolute;inset:0;opacity:.16;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.photo-slot .ph svg{width:34%;height:34%;color:color-mix(in srgb,var(--gold) 85%,white);
+  opacity:.55;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.photo-slot .ph .ph-tag{position:absolute;bottom:12px;left:14px;font-size:.58rem;letter-spacing:.28em;
+  text-transform:uppercase;color:color-mix(in srgb,var(--cream) 60%,transparent)}
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transition:opacity .9s var(--ease-brindi);z-index:2}
+.photo-slot img.loaded{opacity:1}
+
+/* =========================================================
+   ACT 4 — FROM THE WOODFIRE (dark)
+   ========================================================= */
+.woodfire{position:relative;background:
+   radial-gradient(140% 100% at 50% 0%, #3c1727 0%, var(--plum-deep) 55%, #160810 100%);
+   color:var(--cream);padding:clamp(90px,14vh,180px) 0;overflow:hidden}
+.woodfire::after{content:'';position:absolute;left:0;right:0;bottom:0;height:42vh;pointer-events:none;
+  background:linear-gradient(0deg,color-mix(in srgb,var(--terracotta) 30%,transparent),transparent)}
+.woodfire-head{max-width:var(--maxw);margin:0 auto 4rem;position:relative;z-index:2}
+.woodfire-head .sect-title{color:var(--cream)}
+.woodfire-head .sect-title em{color:var(--gold)}
+.woodfire-head .sect-lede{margin-top:1.6rem}
+.entree-list{position:relative;z-index:2;border-top:1px solid color-mix(in srgb,var(--gold) 22%,transparent)}
+.entree{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(14px,3vw,40px);
+  padding:clamp(18px,3.2vh,34px) 0;border-bottom:1px solid color-mix(in srgb,var(--gold) 16%,transparent);
+  position:relative}
+.entree .e-idx{font-family:var(--serif);font-size:.9rem;color:var(--terracotta)}
+.entree .e-name{font-family:var(--serif);font-weight:300;font-size:clamp(1.5rem,4.4vw,3.1rem);
+  line-height:1;color:var(--cream);letter-spacing:-.01em}
+.entree .e-name .e-note{display:block;font-family:var(--sans);font-weight:300;font-size:.78rem;
+  letter-spacing:.16em;text-transform:uppercase;color:color-mix(in srgb,var(--gold) 75%,transparent);margin-top:.5rem}
+.entree .e-price{font-family:var(--serif);font-size:clamp(1.3rem,3vw,2.2rem);color:var(--gold)}
+.entree:hover .e-name{color:var(--gold);transition:.4s}
+.woodfire-photos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,3vw,40px);
+  margin-top:5rem;position:relative;z-index:2}
+.woodfire-photos .photo-slot{box-shadow:0 30px 60px -30px #000}
+
+/* =========================================================
+   ACT 5 — FLATBREAD & SALADS
+   ========================================================= */
+.flat{background:linear-gradient(var(--cream-2),var(--cream));padding:clamp(90px,14vh,170px) 0}
+.flat-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(40px,7vw,120px);align-items:start}
+.flat-col .sect-title{margin:.6rem 0 2rem}
+.tag-list{list-style:none;display:flex;flex-wrap:wrap;gap:14px}
+.tag-list li{font-family:var(--serif);font-size:clamp(1.1rem,2vw,1.7rem);color:var(--plum);
+  border:1px solid color-mix(in srgb,var(--plum) 26%,transparent);border-radius:3em;
+  padding:.45em 1.1em;transition:.4s var(--ease-brindi);background:color-mix(in srgb,var(--cream) 40%,transparent)}
+.tag-list li:hover{background:var(--plum);color:var(--cream);border-color:var(--plum)}
+.tag-list li .p{font-family:var(--sans);font-size:.7rem;color:var(--terracotta);margin-left:.5em;vertical-align:middle}
+.tag-list li:hover .p{color:var(--gold)}
+.line-list{list-style:none;display:flex;flex-direction:column;gap:1.1rem}
+.line-list li{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  border-bottom:1px dashed color-mix(in srgb,var(--plum) 24%,transparent);padding-bottom:1.1rem}
+.line-list .l-name{font-family:var(--serif);font-size:clamp(1.15rem,2vw,1.6rem);color:var(--plum)}
+.line-list .l-desc{display:block;font-family:var(--sans);font-size:.84rem;font-weight:300;
+  color:color-mix(in srgb,var(--ink) 65%,transparent);margin-top:.25rem;max-width:34ch}
+.line-list .l-price{font-family:var(--serif);font-size:1.3rem;color:var(--terracotta);white-space:nowrap}
+
+/* =========================================================
+   ACT 6 — SWEET FINISH
+   ========================================================= */
+.sweets{background:
+   radial-gradient(120% 100% at 80% 0%, #f7e9c8 0%, transparent 50%),
+   linear-gradient(160deg, #f3e3c2 0%, var(--saffron) 130%);
+   padding:clamp(90px,14vh,170px) 0;color:var(--plum-deep);position:relative;overflow:hidden}
+.sweets-head{text-align:center;margin-bottom:3.5rem}
+.sweets-head .sect-title{color:var(--plum)}
+.sweets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,42px)}
+.sweet{text-align:center}
+.sweet .photo-slot{margin-bottom:1rem}
+.sweet .s-name{font-family:var(--serif);font-size:clamp(1.2rem,2vw,1.7rem);color:var(--plum)}
+.sweet .s-desc{font-size:.85rem;font-weight:300;color:color-mix(in srgb,var(--plum-deep) 72%,transparent);margin-top:.3rem}
+.sweet .s-price{font-family:var(--serif);color:var(--terracotta);font-size:1.2rem;margin-top:.4rem;display:block}
+.drinks{margin-top:4.5rem;text-align:center}
+.drink-list{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:1rem 2.4rem;margin-top:1.4rem}
+.drink-list li{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,1.8vw,1.4rem);color:var(--plum-deep)}
+.drink-list li::after{content:'·';margin-left:2.4rem;color:var(--terracotta);font-style:normal}
+.drink-list li:last-child::after{content:''}
+
+/* =========================================================
+   ACT 7 — THE TABLE
+   ========================================================= */
+.table{background:
+   radial-gradient(120% 120% at 50% 50%, #3a1626 0%, var(--plum) 60%, var(--plum-deep) 100%);
+   color:var(--cream);min-height:100svh;display:grid;place-items:center;text-align:center;padding:var(--pad) }
+.table-inner{display:flex;flex-direction:column;align-items:center}
+.table-quote{font-family:var(--serif);font-weight:300;line-height:1.02;margin:1.6rem 0 2.6rem;
+  font-size:clamp(2.6rem,9vw,7rem);letter-spacing:-.02em}
+.table-quote .ql{display:block;overflow:hidden}
+.table-quote em{color:var(--gold)}
+.table-meta{display:flex;gap:clamp(30px,8vw,90px);margin-bottom:2.6rem;flex-wrap:wrap;justify-content:center}
+.meta-block{display:flex;flex-direction:column;gap:.5rem}
+.meta-label{font-size:.66rem;letter-spacing:.34em;text-transform:uppercase;color:var(--terracotta)}
+.meta-value{font-family:var(--serif);font-size:clamp(1.1rem,2vw,1.6rem);color:var(--cream)}
+a.meta-value:hover{color:var(--gold)}
+.btn-menu{font-family:var(--sans);font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  font-size:.78rem;color:var(--plum-deep);background:var(--gold);padding:1.1em 2.4em;border-radius:3em;
+  transition:.4s var(--ease-brindi)}
+.btn-menu:hover{background:var(--cream);transform:translateY(-2px)}
+
+/* =========================================================
+   ACT 8 — TEASE + EGG FINALE
+   ========================================================= */
+.tease{position:relative;min-height:100svh;background:linear-gradient(var(--plum-deep),#120610);
+  color:var(--cream);overflow:hidden}
+.tease-stage{position:absolute;inset:0;display:grid;place-items:center}
+.tease-line{position:absolute;text-align:center;opacity:0}
+.tease-line .t{font-family:var(--serif);font-weight:300;font-size:clamp(2.4rem,8vw,6rem);color:var(--cream)}
+.tease-line em{color:var(--gold);font-style:italic}
+
+.finale{position:relative;min-height:100svh;background:radial-gradient(100% 80% at 50% 32%, #1c0c16 0%, #0c0409 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(1.2rem,4vh,2.4rem);
+  padding:10vh var(--pad);overflow:hidden}
+.finale-bg{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 50% at 50% 42%, color-mix(in srgb,var(--plum) 50%,transparent), transparent 70%)}
+
+.egg-stage{position:relative;width:min(86vw,420px);height:min(60vh,460px);
+  display:grid;place-items:center;z-index:2;opacity:0}
+.egg-glow{position:absolute;width:120%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb,var(--yolk) 75%,transparent) 0%, color-mix(in srgb,var(--terracotta) 40%,transparent) 35%, transparent 68%);
+  transform:scale(.2);opacity:0;filter:blur(8px);z-index:1}
+.jb-reveal{position:absolute;width:min(96%,420px);height:auto;z-index:2;
+  transform:scale(0);opacity:0;filter:drop-shadow(0 20px 50px rgba(0,0,0,.55))}
+.egg-btn{position:relative;z-index:3;width:min(60%,240px);display:block;background:none;
+  -webkit-tap-highlight-color:transparent}
+.egg-svg{width:100%;height:auto;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
+.egg-shadow{fill:rgba(0,0,0,.45)}
+.shell{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 30%,#caa);stroke-width:1.5}
+.shell-half{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 30%,#caa);stroke-width:1.5;opacity:0}
+.egg-hl{pointer-events:none}
+#cracks{opacity:0}
+.cracks path{stroke:#5a3324;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.burst{position:absolute;width:2px;height:2px;left:50%;top:46%;z-index:4;pointer-events:none}
+.spark{position:absolute;left:0;top:0;border-radius:50%;will-change:transform}
+
+.egg-prompt{position:absolute;bottom:-8%;left:50%;translate:-50% 0;z-index:3;
+  font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);
+  font-weight:500;white-space:nowrap}
+.egg-btn.spent{pointer-events:none}
+
+.payoff{position:relative;z-index:3;text-align:center;opacity:0;margin:0 auto;
+  max-width:min(92vw,680px);display:flex;flex-direction:column;align-items:center}
+.payoff-kicker{font-family:var(--sans);font-weight:500;font-size:clamp(.64rem,1.3vw,.78rem);
+  letter-spacing:.44em;text-transform:uppercase;color:var(--gold);margin-bottom:clamp(.9rem,2.2vh,1.5rem)}
+.payoff-title{font-family:var(--serif);font-weight:300;line-height:1.08;color:var(--cream);
+  font-size:clamp(1.9rem,5.6vw,3.7rem);letter-spacing:-.012em;text-wrap:balance;max-width:14ch}
+.payoff-title em{font-style:normal;font-weight:400;white-space:nowrap}
+.payoff-title .jb{color:var(--jb-red)}
+.payoff-title .br{color:var(--gold)}
+.payoff-sub{margin-top:clamp(1.1rem,2.6vh,1.7rem);font-size:clamp(.72rem,1.3vw,.92rem);
+  letter-spacing:.28em;text-transform:uppercase;color:color-mix(in srgb,var(--cream) 62%,transparent)}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.foot{background:var(--plum-deep);color:var(--cream);text-align:center;padding:clamp(70px,12vh,140px) 0}
+.foot-line{font-family:var(--serif);font-weight:300;font-size:clamp(2rem,6vw,4rem);margin-bottom:2.8rem}
+.foot-line em{color:var(--gold)}
+.foot-logos{display:flex;align-items:center;justify-content:center;gap:clamp(20px,5vw,60px);margin-bottom:2.6rem;flex-wrap:wrap}
+.foot-brindis{width:min(60vw,300px);background:var(--cream);padding:18px 26px;border-radius:6px}
+.foot-jb{width:min(48vw,210px)}
+.foot-amp{font-family:var(--serif);font-size:2rem;color:var(--terracotta)}
+.foot-meta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;align-items:center;
+  font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--cream) 70%,transparent)}
+.foot-meta a:hover{color:var(--gold)}
+.foot-meta .dot{color:var(--terracotta)}
+.foot-credit{margin-top:1.6rem;font-family:var(--serif);font-style:italic;
+  color:color-mix(in srgb,var(--gold) 70%,transparent);font-size:.95rem}
+
+/* =========================================================
+   MENU MODAL
+   ========================================================= */
+.menu-modal{position:fixed;inset:0;z-index:120;background:color-mix(in srgb,var(--plum-deep) 92%,transparent);
+  backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:.5s var(--ease-brindi);overflow:hidden}
+.menu-modal.open{opacity:1;visibility:visible}
+.menu-scroll{position:absolute;inset:0;overflow-y:auto;padding:clamp(60px,10vh,120px) var(--pad);
+  display:flex;flex-direction:column;align-items:center;gap:28px}
+.menu-modal-kicker{font-family:var(--sans);letter-spacing:.4em;text-transform:uppercase;
+  color:var(--gold);font-size:.8rem;margin-bottom:8px}
+.menu-scroll img{width:min(92vw,640px);border-radius:6px;box-shadow:0 30px 80px -30px #000;
+  transform:translateY(30px);opacity:0;transition:.7s var(--ease-brindi)}
+.menu-modal.open .menu-scroll img{transform:none;opacity:1}
+.menu-modal.open .menu-scroll img:nth-child(3){transition-delay:.08s}
+.menu-modal.open .menu-scroll img:nth-child(4){transition-delay:.16s}
+.menu-close{position:fixed;top:18px;right:20px;z-index:121;width:48px;height:48px;border-radius:50%;
+  font-size:1.6rem;color:var(--cream);background:color-mix(in srgb,var(--plum) 60%,transparent);
+  border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);transition:.3s}
+.menu-close:hover{background:var(--gold);color:var(--plum-deep);transform:rotate(90deg)}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media(max-width:860px){
+  .flat-grid{grid-template-columns:1fr;gap:60px}
+  .sweets-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}
+  .woodfire-photos{grid-template-columns:1fr}
+  .entree{grid-template-columns:auto 1fr;row-gap:.4rem}
+  .entree .e-price{grid-column:2;justify-self:end}
+  .dish-card:nth-child(even){transform:none}
+}
+@media(max-width:560px){
+  .sound-toggle{width:40px;height:40px}
+  .foot-brindis{padding:14px 18px}
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+@media(prefers-reduced-motion:reduce){
+  .scroll-cue i::after{animation:none}
+  .fire-line,.tease-line{position:relative;opacity:1!important;margin:1.4rem 0}
+  .fire-stage,.tease-stage{position:relative;inset:auto;height:auto;padding-block:18vh}
+  .fire,.tease{min-height:auto}
+  /* unwind the horizontal mezze pin into a stacked grid */
+  .mezze-viewport{height:auto;overflow:visible;padding-block:14vh}
+  .mezze-track{flex-wrap:wrap;transform:none!important;justify-content:center;gap:40px}
+  .mezze-intro{width:100%;text-align:center}
+  .dish-card{width:min(86vw,320px)}
+  .dish-card:nth-child(even){transform:none}
+  .egg-stage{opacity:1}
+}

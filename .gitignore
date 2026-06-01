@@ -1,0 +1,13 @@
+# Build tooling & generated artifact (the shareable single file lives locally)
+build-standalone.js
+brindis-standalone.html
+
+# Loose originals / archives that are NOT part of the deployed site
+gsap-public.zip
+LogoAI1.jpg
+~~~JB_Logo1.png
+menu-2-high.webp
+menu-3-high.webp
+menu-new-1-high-copy-high.webp
+New Text Document.txt
+.claude/

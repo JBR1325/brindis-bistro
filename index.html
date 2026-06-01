@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brindi's Bistro — Authentic Woodfire Cuisine · Green Valley, Arizona</title>
+<meta name="description" content="Brindi's Bistro — Turkish & Mediterranean woodfire cuisine in Green Valley, Arizona. Est. 2024.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============ FIXED UI (outside smooth wrapper) ============ -->
+<div class="grain" aria-hidden="true"></div>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pre-inner">
+    <span class="pre-mark">B</span>
+    <span class="pre-word" id="preWord">BRINDI&rsquo;S</span>
+    <span class="pre-rule"><i id="preRule"></i></span>
+    <span class="pre-sub">Authentic Woodfire Cuisine</span>
+  </div>
+</div>
+
+<div class="scroll-progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+<button class="sound-toggle" id="soundToggle" aria-pressed="false" aria-label="Toggle sound effects" title="Sound">
+  <svg viewBox="0 0 24 24" class="ico-sound"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path class="wave" d="M16 8.5a4 4 0 0 1 0 7"/><path class="wave2" d="M18.5 6a7 7 0 0 1 0 12"/></svg>
+  <svg viewBox="0 0 24 24" class="ico-muted"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
+</button>
+
+<!-- ============ MENU LIGHTBOX ============ -->
+<div class="menu-modal" id="menuModal" aria-hidden="true" role="dialog" aria-label="Full menu">
+  <button class="menu-close" id="menuClose" aria-label="Close menu">&times;</button>
+  <div class="menu-scroll">
+    <p class="menu-modal-kicker">The Full Menu</p>
+    <img src="assets/menu-starters.webp" alt="Brindi's menu — starters and salads" loading="lazy">
+    <img src="assets/menu-mains.webp" alt="Brindi's menu — entrées and wood-fired flatbread" loading="lazy">
+    <img src="assets/menu-sweets.webp" alt="Brindi's menu — soups, desserts and beverages" loading="lazy">
+  </div>
+</div>
+
+<!-- ============ SMOOTH SCROLL CONTENT ============ -->
+<div id="smooth-wrapper">
+<div id="smooth-content">
+<main>
+
+  <!-- ===== ACT 1 — HERO ===== -->
+  <section class="hero" id="hero">
+    <div class="ember-field" id="emberHero" aria-hidden="true"></div>
+    <div class="hero-emblem" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <p class="kicker hero-kicker">Green Valley &middot; Arizona</p>
+      <img class="hero-logo" src="assets/brindis-logo.png" alt="Brindi's Bistro" decoding="async">
+      <h1 class="hero-title">
+        <span class="line">Authentic</span>
+        <span class="line"><em>Woodfire</em> Cuisine</span>
+      </h1>
+      <p class="hero-tag">Turkish &amp; Mediterranean &middot; Est.&nbsp;2024</p>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
+  </section>
+
+  <!-- ===== ACT 2 — THE FIRE (pinned story) ===== -->
+  <section class="fire" id="fire">
+    <div class="fire-stage">
+      <div class="fire-line" data-dir="up"><span class="t">It begins with <em>fire.</em></span></div>
+      <div class="fire-line" data-dir="left"><span class="t">Wood-smoke, olive oil, <em>a little patience.</em></span></div>
+      <div class="fire-line" data-dir="right"><span class="t">Recipes carried from <em>Anatolia</em> to the Sonoran desert.</span></div>
+      <div class="fire-line" data-dir="scale"><span class="t">Pulled from the flame &mdash; <em>this is Brindi's.</em></span></div>
+    </div>
+    <div class="fire-glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- ===== ACT 3 — MEZZE (horizontal pin) ===== -->
+  <section class="mezze" id="mezze">
+    <div class="mezze-viewport">
+      <div class="mezze-track" id="mezzeTrack">
+        <div class="mezze-intro">
+          <p class="kicker">To Begin</p>
+          <h2 class="sect-title">Mezze</h2>
+          <p class="sect-lede">Small plates, slow rituals. Each one made to be torn, dipped and shared across the table.</p>
+          <span class="drag-hint">Keep scrolling &rarr;</span>
+        </div>
+        <!-- cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACT 4 — FROM THE WOODFIRE (dark) ===== -->
+  <section class="woodfire" id="woodfire">
+    <div class="ember-field" id="emberWood" aria-hidden="true"></div>
+    <div class="wrap">
+      <header class="woodfire-head">
+        <p class="kicker light">The Flame</p>
+        <h2 class="sect-title huge">From the<br><em>Woodfire</em></h2>
+        <p class="sect-lede light">Everything meets the open flame &mdash; charred at the edges, tender at the heart, plated with rice, market vegetables and house yogurt.</p>
+      </header>
+      <div class="entree-list" id="entreeList"><!-- injected --></div>
+    </div>
+  </section>
+
+  <!-- ===== ACT 5 — FLATBREAD & SALADS ===== -->
+  <section class="flat" id="flat">
+    <div class="wrap flat-grid">
+      <div class="flat-col">
+        <p class="kicker">Stone &amp; Flame</p>
+        <h2 class="sect-title">Wood-Fired<br>Flatbread</h2>
+        <ul class="tag-list" id="flatList"><!-- injected --></ul>
+      </div>
+      <div class="flat-col salads">
+        <p class="kicker">From the Garden</p>
+        <h2 class="sect-title">Salads</h2>
+        <ul class="line-list" id="saladList"><!-- injected --></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACT 6 — SWEET FINISH ===== -->
+  <section class="sweets" id="sweets">
+    <div class="wrap">
+      <header class="sweets-head">
+        <p class="kicker">Last Course</p>
+        <h2 class="sect-title">A Sweet Finish</h2>
+      </header>
+      <div class="sweets-grid" id="sweetsGrid"><!-- injected --></div>
+      <div class="drinks">
+        <p class="kicker">From the Kettle</p>
+        <ul class="drink-list" id="drinkList"><!-- injected --></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACT 7 — THE TABLE (statement + reservations) ===== -->
+  <section class="table" id="table">
+    <div class="wrap table-inner">
+      <p class="kicker light">Come Hungry</p>
+      <blockquote class="table-quote">
+        <span class="ql line">Come for the <em>fire.</em></span>
+        <span class="ql line">Stay for the <em>table.</em></span>
+      </blockquote>
+      <div class="table-meta">
+        <div class="meta-block">
+          <span class="meta-label">Find Us</span>
+          <span class="meta-value">Green Valley, Arizona</span>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">Reservations</span>
+          <a class="meta-value" href="tel:5208496188">520&middot;849&middot;6188</a>
+        </div>
+      </div>
+      <button class="btn-menu" id="openMenu">View the Full Menu</button>
+    </div>
+  </section>
+
+  <!-- ===== ACT 8 — THE TWIST / EGG FINALE ===== -->
+  <section class="tease" id="tease">
+    <div class="tease-stage">
+      <div class="tease-line" data-dir="up"><span class="t">But wait&hellip;</span></div>
+      <div class="tease-line" data-dir="up"><span class="t">there&rsquo;s <em>more.</em></span></div>
+      <div class="tease-line" data-dir="up"><span class="t">Something new is <em>hatching.</em></span></div>
+    </div>
+  </section>
+
+  <section class="finale" id="finale">
+    <div class="finale-bg" aria-hidden="true"></div>
+    <div class="egg-stage" id="eggStage">
+      <div class="egg-glow" id="eggGlow" aria-hidden="true"></div>
+      <img class="jb-reveal" id="jbReveal" src="assets/jerrybobs-logo.png" alt="Jerry Bob's Family Restaurant — coming soon to Brindi's">
+      <div class="burst" id="burst" aria-hidden="true"></div>
+
+      <button class="egg-btn" id="eggBtn" aria-label="Tap the egg — a surprise is inside">
+        <svg class="egg-svg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="shellGrad" x1="0" y1="0" x2="0.35" y2="1">
+              <stop offset="0" stop-color="#fbf3e2"/>
+              <stop offset="0.5" stop-color="#f4e6cb"/>
+              <stop offset="1" stop-color="#e7d2a8"/>
+            </linearGradient>
+            <radialGradient id="shellHL" cx="0.38" cy="0.3" r="0.5">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse class="egg-shadow" cx="150" cy="372" rx="78" ry="15"/>
+          <!-- intact egg (visible while cracking) -->
+          <path id="eggWhole" class="shell" d="M150 44 C235 58 262 152 262 246 C262 322 212 362 150 362 C88 362 38 322 38 246 C38 152 65 58 150 44 Z"/>
+          <ellipse id="eggHL" class="egg-hl" cx="120" cy="150" rx="46" ry="62" fill="url(#shellHL)"/>
+          <!-- split halves (revealed at hatch) -->
+          <path id="shellL" class="shell-half" d="M150 44 L158 86 L143 126 L160 170 L141 214 L157 258 L145 302 L153 344 L150 362 C88 362 38 322 38 246 C38 152 65 58 150 44 Z"/>
+          <path id="shellR" class="shell-half" d="M150 44 C235 58 262 152 262 246 C262 322 212 362 150 362 L153 344 L145 302 L157 258 L141 214 L160 170 L143 126 L158 86 L150 44 Z"/>
+          <!-- progressive cracks -->
+          <g id="cracks" class="cracks" fill="none">
+            <g class="crack" data-crack="1">
+              <path d="M150 72 L136 92 L151 108 L134 126"/>
+              <path d="M151 108 L168 118"/>
+            </g>
+            <g class="crack" data-crack="2">
+              <path d="M134 126 L150 150 L132 176 L150 200"/>
+              <path d="M150 150 L172 158 L186 142"/>
+            </g>
+            <g class="crack" data-crack="3">
+              <path d="M150 44 L158 86 L143 126 L160 170 L141 214 L157 258 L145 302 L153 344 L150 362"/>
+              <path d="M141 214 L116 226 M157 258 L184 250 M143 126 L120 118"/>
+            </g>
+          </g>
+        </svg>
+      </button>
+
+      <p class="egg-prompt" id="eggPrompt">Tap the egg</p>
+    </div>
+
+    <!-- payoff (revealed after hatch) -->
+    <div class="payoff" id="payoff" aria-hidden="true">
+      <p class="payoff-kicker">A New Chapter Begins</p>
+      <h2 class="payoff-title"><em class="jb">Jerry&nbsp;Bob&rsquo;s</em> is coming to <em class="br">Brindi&rsquo;s</em></h2>
+      <p class="payoff-sub">Coming Soon &middot; Green Valley, Arizona</p>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER / UNITY BEAT ===== -->
+  <footer class="foot" id="foot">
+    <div class="wrap">
+      <p class="foot-line">Two kitchens. <em>One table.</em></p>
+      <div class="foot-logos">
+        <img class="foot-brindis" src="assets/brindis-logo.png" alt="Brindi's Bistro">
+        <span class="foot-amp">&times;</span>
+        <img class="foot-jb" src="assets/jerrybobs-logo.png" alt="Jerry Bob's Family Restaurant">
+      </div>
+      <div class="foot-meta">
+        <span>Green Valley, Arizona</span>
+        <span class="dot">&middot;</span>
+        <a href="tel:5208496188">520&middot;849&middot;6188</a>
+        <span class="dot">&middot;</span>
+        <span>Est. 2024</span>
+      </div>
+      <p class="foot-credit">Authentic Woodfire Cuisine &mdash; Turkish &amp; Mediterranean</p>
+    </div>
+  </footer>
+
+</main>
+</div><!-- /smooth-content -->
+</div><!-- /smooth-wrapper -->
+
+<!-- ============ GSAP (local build) ============ -->
+<script src="vendor/gsap/gsap.min.js"></script>
+<script src="vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="vendor/gsap/ScrollSmoother.min.js"></script>
+<script src="vendor/gsap/SplitText.min.js"></script>
+<script src="vendor/gsap/DrawSVGPlugin.min.js"></script>
+<script src="vendor/gsap/MotionPathPlugin.min.js"></script>
+<script src="vendor/gsap/CustomEase.min.js"></script>
+<script src="vendor/gsap/ScrollToPlugin.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
