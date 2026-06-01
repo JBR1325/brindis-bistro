@@ -7,6 +7,7 @@
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var smoother = null;
+  var normalizer = null;   // GSAP touch-scroll normalizer (created alongside the smoother)
 
   /* ----------------------------------------------------------
      Line-icon set (subtle placeholders inside photo-slots)
@@ -176,11 +177,15 @@
     var modal=document.getElementById("menuModal");
     document.getElementById("openMenu").addEventListener("click", function(){
       modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
-      if(smoother) smoother.paused(true); document.body.style.overflow="hidden";
+      if(smoother) smoother.paused(true);
+      if(normalizer) normalizer.disable();   // release touch so the tall modal scrolls natively on mobile
+      document.body.style.overflow="hidden";
     });
     function closeMenu(){
       modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
-      if(smoother) smoother.paused(false); document.body.style.overflow="";
+      if(smoother) smoother.paused(false);
+      if(normalizer) normalizer.enable();
+      document.body.style.overflow="";
     }
     document.getElementById("menuClose").addEventListener("click", closeMenu);
     modal.addEventListener("click", function(e){ if(e.target===modal) closeMenu(); });
@@ -266,7 +271,7 @@
     var lines=gsap.utils.toArray(".fire-line");
     lines.forEach(function(l){ l._w=new SplitText(l.querySelector(".t"),{type:"words"}).words; });
     var tl=gsap.timeline({scrollTrigger:{trigger:".fire", start:"top top",
-      end:"+="+(lines.length*110)+"%", pin:true, scrub:1}});
+      end:"+="+(lines.length*110)+"%", pin:true, scrub:1, anticipatePin:1}});
     lines.forEach(function(l,i){
       var d=l.dataset.dir;
       var from = d==="left"?{xPercent:-55}: d==="right"?{xPercent:55}: d==="scale"?{scale:.7}:{yPercent:90};
@@ -363,7 +368,7 @@
   function teaseStory(){
     var lines=gsap.utils.toArray(".tease-line");
     var tl=gsap.timeline({scrollTrigger:{trigger:".tease",start:"top top",
-      end:"+="+(lines.length*90)+"%",pin:true,scrub:1}});
+      end:"+="+(lines.length*90)+"%",pin:true,scrub:1,anticipatePin:1}});
     lines.forEach(function(l,i){
       var w=new SplitText(l.querySelector(".t"),{type:"words",mask:"words"}).words;
       tl.fromTo(l,{opacity:0},{opacity:1,duration:.18},i);
@@ -506,7 +511,13 @@
       return;
     }
 
-    smoother=ScrollSmoother.create({wrapper:"#smooth-wrapper", content:"#smooth-content", smooth:1.2, effects:true});
+    // Mobile jitter fixes: ignoreMobileResize stops ScrollTrigger refreshing (and jumping)
+    // when the address bar shows/hides; normalizeScroll lets GSAP drive touch scrolling so the
+    // pinned + horizontal sections stay rock-solid instead of fighting native momentum.
+    ScrollTrigger.config({ ignoreMobileResize:true });
+    smoother=ScrollSmoother.create({wrapper:"#smooth-wrapper", content:"#smooth-content",
+      smooth:1.2, effects:true, normalizeScroll:true});
+    normalizer=ScrollTrigger.normalizeScroll();
     embers("#emberHero", 16);
     embers("#emberWood", 26);
 
