@@ -9,6 +9,7 @@
   var smoother = null;
   var normalizer = null;   // GSAP touch-scroll normalizer (created alongside the smoother)
   var PHOTOS_VER = "2";    // bump when dish photos change -> cache-busts the cached image URLs
+  var hasPhysics = false;  // true once Draggable + InertiaPlugin register (egg drag/throw enabled)
 
   /* ----------------------------------------------------------
      Line-icon set (subtle placeholders inside photo-slots)
@@ -407,70 +408,176 @@
   }
 
   function initEgg(){
-    var btn=document.getElementById("eggBtn");
+    var arena=document.getElementById("eggArena");
+    var eggBtn=document.getElementById("eggBtn");
+    var eggInner=eggBtn.querySelector(".egg-inner");
+    var glow=document.getElementById("eggGlow");
+    var burst=document.getElementById("burst");
+    var floorEl=document.getElementById("eggFloor");
+    var jb=document.getElementById("jbReveal");
+    var prompt=document.getElementById("eggPrompt");
     var cracks=gsap.utils.toArray("#cracks .crack");
+    var prompts=["Crack it open…","Again…","One more…"];
+    var taps=0, MAX=3, done=false, idle=[], draggable=null, lastX=0;
+    var arenaH=0, arenaW=0, eggH=0, floorY=0;
+
+    // shared centered basis: all arena children pivot on their own centre; x/y are physics offsets
+    gsap.set(eggBtn,{xPercent:-50,yPercent:-50,x:0,y:0,rotation:0});
+    gsap.set(jb,{xPercent:-50,yPercent:-50,x:0,y:0,scale:0,opacity:0,transformOrigin:"50% 50%"});
+    gsap.set(glow,{xPercent:-50,yPercent:-50,x:0,y:0,scale:0.2,opacity:0});
+    gsap.set(burst,{xPercent:-50,yPercent:-50,x:0,y:0});
+    gsap.set(floorEl,{xPercent:-50,yPercent:-50,x:0,y:0,opacity:0});
     gsap.set("#cracks",{opacity:1});
     try{ gsap.set("#cracks path",{drawSVG:0}); }catch(e){ gsap.set("#cracks",{opacity:0}); }
     gsap.set(["#shellL","#shellR"],{opacity:0});
-    var prompt=document.getElementById("eggPrompt");
-    var prompts=["Crack it open…","Again…","One more…"];
-    var taps=0, MAX=3, done=false, idle=[];
 
-    function startIdle(){
-      if(reduced) return;
-      idle.push(gsap.to(btn,{y:-9,duration:2.2,ease:"sine.inOut",yoyo:true,repeat:-1}));
-      idle.push(gsap.to(prompt,{opacity:.45,duration:1.2,ease:"sine.inOut",yoyo:true,repeat:-1}));
+    function measure(){
+      var r=arena.getBoundingClientRect();
+      arenaH=r.height; arenaW=r.width; eggH=eggBtn.offsetHeight||200;
+      floorY=arenaH/2 - eggH*0.46 - 6;     // egg-centre y-offset when resting on the floor
     }
-    function stopIdle(){ idle.forEach(function(t){t.kill();}); idle=[]; gsap.set(btn,{y:0}); }
+    function setFloorShadow(){
+      var ey=gsap.getProperty(eggBtn,"y");
+      var prox=gsap.utils.clamp(0,1, 1 - Math.abs(floorY-ey)/(arenaH*0.55));
+      gsap.set(floorEl,{ x:gsap.getProperty(eggBtn,"x"), y:floorY+eggH*0.46,
+        opacity:0.55*prox*prox, scaleX:0.6+0.6*prox, scaleY:0.6+0.6*prox });
+    }
+    function startIdle(){ if(reduced) return;
+      idle.push(gsap.to(prompt,{opacity:.55,duration:1.3,ease:"sine.inOut",yoyo:true,repeat:-1})); }
+    function stopIdle(){ idle.forEach(function(t){t.kill();}); idle=[]; }
+    function spin(d){ var dx=d.x-lastX; lastX=d.x;
+      gsap.set(eggBtn,{rotation: gsap.getProperty(eggBtn,"rotation")+dx*0.6}); setFloorShadow(); }
 
-    ScrollTrigger.create({trigger:".finale", start:"top 55%", once:true, onEnter:function(){
-      if(reduced){ gsap.set(".egg-stage",{opacity:1}); gsap.set(prompt,{opacity:1}); return; }
-      gsap.fromTo(".egg-stage",{scale:.85,opacity:0,y:40},{scale:1,opacity:1,y:0,duration:1.2,ease:"brindi"});
-      gsap.fromTo(prompt,{opacity:0},{opacity:1,duration:1,delay:.7,onComplete:startIdle});
-    }});
+    function toppleOnEnter(){
+      measure();
+      var dir=(gsap.utils.random(0,1)>0.5)?1:-1;
+      gsap.timeline({delay:.45, onUpdate:setFloorShadow, onComplete:createDraggable})
+        .to(eggBtn,{rotation:dir*7,duration:.55,ease:"sine.inOut"})
+        .to(eggBtn,{rotation:dir*-6,duration:.5,ease:"sine.inOut"})
+        .to(eggBtn,{rotation:dir*34,duration:.45,ease:"power1.in"})
+        .to(eggBtn,{rotation:dir*58,y:floorY,duration:.5,ease:"power2.in",onComplete:function(){ playCrack(0.5,false); }})
+        .to(eggBtn,{rotation:dir*51,duration:.22,ease:"sine.out"})
+        .to(eggBtn,{rotation:dir*58,duration:.55,ease:"bounce.out"});
+    }
 
-    function tap(){
+    function settleToFloor(){
+      var curR=gsap.getProperty(eggBtn,"rotation");
+      var rest=Math.round(curR/180)*180 + (curR<0?-1:1)*58;   // a lying pose, never perfectly upright
+      var lim=arenaW/2 - eggH*0.42;
+      var cx=gsap.utils.clamp(-lim, lim, gsap.getProperty(eggBtn,"x"));
+      playCrack(0.4,false);
+      gsap.timeline({onUpdate:setFloorShadow})
+        .to(eggBtn,{x:cx,y:floorY,duration:.85,ease:"bounce.out"},0)
+        .to(eggBtn,{rotation:rest,duration:.85,ease:"power2.out"},0);
+    }
+
+    function createDraggable(){
+      if(done) return;
+      startIdle();
+      try{
+        draggable=Draggable.create(eggBtn,{
+          type:"x,y", bounds:arena, edgeResistance:0.65,
+          inertia:true, minimumMovement:6, dragClickables:true, allowContextMenu:true, zIndexBoost:false,
+          onPress:function(){ if(normalizer) normalizer.disable(); eggBtn.classList.add("dragging");
+            gsap.killTweensOf(eggBtn); lastX=this.x; },
+          onDragStart:function(){ stopIdle(); gsap.to(prompt,{opacity:0,duration:.3}); },
+          onDrag:function(){ spin(this); },
+          onThrowUpdate:function(){ spin(this); },
+          onRelease:function(){ if(normalizer) normalizer.enable(); eggBtn.classList.remove("dragging"); },
+          onThrowComplete:function(){ settleToFloor(); },
+          onClick:function(){ crackOnce(); }
+        })[0];
+      }catch(e){ draggable=null; eggBtn.addEventListener("click",crackOnce); }
+    }
+
+    function crackOnce(){
       if(done) return;
       ensureAudio();
-      if(reduced){ hatch(); return; }
-      taps++; stopIdle(); startIdle();
-      playCrack(0.5+taps*0.25, false);
+      taps++;
+      playCrack(0.5+taps*0.25,false);
       var grp=cracks[taps-1];
-      if(grp){
-        try{ gsap.to(grp.querySelectorAll("path"),{drawSVG:"100%",duration:.45,ease:"power2.out",stagger:.05}); }
-        catch(e){ gsap.to(grp,{opacity:1,duration:.3}); }
-      }
-      gsap.fromTo(btn,{rotation:0},{keyframes:{rotation:[-4,4,-2,1,0]},duration:.42,ease:"power2.out"});
-      gsap.fromTo(".egg-svg",{scale:1},{scale:1.045,duration:.1,yoyo:true,repeat:1});
+      if(grp){ try{ gsap.to(grp.querySelectorAll("path"),{drawSVG:"100%",duration:.45,ease:"power2.out",stagger:.05}); }
+               catch(e){ gsap.to(grp,{opacity:1,duration:.3}); } }
+      gsap.fromTo(eggInner,{rotation:0},{keyframes:{rotation:[-5,5,-3,1,0]},duration:.42,ease:"power2.out"});
+      gsap.fromTo(".egg-svg",{scale:1},{scale:1.05,duration:.1,yoyo:true,repeat:1});
       if(taps>=MAX){ hatch(); }
-      else { prompt.textContent=prompts[taps] || "Again…"; }
+      else { stopIdle(); prompt.textContent=prompts[taps]||"Again…"; gsap.fromTo(prompt,{opacity:.4},{opacity:1,duration:.4}); startIdle(); }
     }
-    btn.addEventListener("click", tap);
 
     function hatch(){
       if(done) return;
-      done=true; btn.classList.add("spent"); stopIdle();
-      gsap.killTweensOf(prompt); gsap.set(btn,{y:0,rotation:0});
-      playCrack(1.0, true);
-      var stage=document.querySelector(".egg-stage");
-      var logoH=document.getElementById("jbReveal").offsetHeight || 150;
-      var tl=gsap.timeline();
-      tl.set(["#shellL","#shellR"],{opacity:1})
-        .set(["#eggWhole","#eggHL","#cracks"],{opacity:0},"<")
-        .to("#shellL",{x:-135,y:120,rotation:-58,opacity:0,duration:1.0,ease:"power2.in"},0)
-        .to("#shellR",{x:135,y:120,rotation:58,opacity:0,duration:1.0,ease:"power2.in"},0)
-        .to(".egg-shadow",{opacity:0,duration:.5},.25)   // clear the leftover shell shadow
-        .fromTo("#eggGlow",{scale:.2,opacity:0},{scale:1.05,opacity:1,duration:.8,ease:"brindi"},.1)
-        .to("#eggGlow",{opacity:.45,scale:1,duration:1.4},.9)
-        .add(spawnSparks,.18)
-        .to(prompt,{opacity:0,duration:.25},.1)
-        .fromTo("#jbReveal",{scale:0,opacity:0,y:24},
-                {scale:1,opacity:1,y:0,duration:1.2,ease: reduced?"power3.out":"elastic.out(1,0.55)"},.32)
-        // collapse the tall egg stage so the logo + announcement settle into a tight group
-        .to(stage,{height:logoH+64,duration: reduced?0.001:1.0,ease:"brindi"},1.25);
-      if(!reduced){ tl.to("#jbReveal",{y:-9,duration:2.8,ease:"sine.inOut",yoyo:true,repeat:-1},2.0); }
-      tl.add(revealPayoff,2.35);
+      done=true; eggBtn.classList.add("spent"); stopIdle();
+      if(draggable){ try{ draggable.disable(); }catch(e){} }
+      if(normalizer) normalizer.enable();
+      gsap.killTweensOf([eggBtn,eggInner,prompt]); gsap.set(eggInner,{rotation:0});
+      gsap.to(prompt,{opacity:0,duration:.25});
+      gsap.to(floorEl,{opacity:0,duration:.5});
+      playCrack(1.0,true);
+      var R=gsap.getProperty(eggBtn,"rotation");
+      var Rn=((R%360)+540)%360-180;                       // shortest-path normalized angle
+      var ex=gsap.getProperty(eggBtn,"x"), ey=gsap.getProperty(eggBtn,"y");
+
+      if(reduced){
+        gsap.set(["#eggWhole","#eggHL","#cracks","#eggSpeckle",".egg-shade","#shellL","#shellR"],{opacity:0});
+        gsap.set(jb,{x:0,y:0,rotation:0,scale:1,opacity:1});
+        revealPayoff();
+        return;
+      }
+
+      gsap.timeline({defaults:{ease:"brindi"}})
+        .set(["#shellL","#shellR"],{opacity:1})
+        .set(["#eggWhole","#eggHL","#cracks","#eggSpeckle",".egg-shade"],{opacity:0},"<")
+        // shell halves are children of the rotated egg → they part along the egg's own axis
+        .to("#shellL",{x:"-=135",y:"+=120",rotation:"-=58",opacity:0,duration:1,ease:"power2.in"},0)
+        .to("#shellR",{x:"+=135",y:"+=120",rotation:"+=58",opacity:0,duration:1,ease:"power2.in"},0)
+        .set(glow,{x:ex,y:ey},0)
+        .fromTo(glow,{scale:.2,opacity:0},{scale:1.05,opacity:1,duration:.8},.1)
+        .to(glow,{opacity:.5,scale:1,duration:1.4},.9)
+        .add(function(){ gsap.set(burst,{x:ex,y:ey}); spawnSparks(); },.18)
+        // logo emerges at the egg's spot, aligned to the egg's top (rotation Rn)…
+        .set(jb,{x:ex,y:ey,rotation:Rn,opacity:0,scale:0})
+        .to(jb,{opacity:1,scale:0.42,duration:.6,ease:"back.out(1.7)"},.34)
+        // …then rights itself upright…
+        .to(jb,{rotation:0,duration:1.0,ease:"back.out(1.4)"},">-.1")
+        // …then centers and expands to fill…
+        .to(jb,{x:0,y:0,scale:1,duration:1.0,ease:"brindi"},">-.2")
+        .to(jb,{y:"-=9",duration:2.8,ease:"sine.inOut",yoyo:true,repeat:-1},">")
+        .add(revealPayoff,"<");
+      ScrollTrigger.refresh();
     }
+
+    // keyboard: crack without dragging (Enter/Space on the button)
+    eggBtn.addEventListener("keydown", function(e){
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); ensureAudio(); crackOnce(); }
+    });
+
+    // entrance — physics path topples then enables drag; reduced / no-plugins path is static click-to-crack
+    ScrollTrigger.create({trigger:".finale", start:"top 55%", once:true, onEnter:function(){
+      measure();
+      if(reduced || !hasPhysics){
+        gsap.set(arena,{opacity:1}); gsap.set(prompt,{opacity:1}); prompt.textContent="Tap to crack";
+        eggBtn.addEventListener("click", crackOnce);
+        return;
+      }
+      prompt.textContent="Drag it · tap to crack";
+      gsap.to(arena,{opacity:1,duration:1.0,ease:"brindi"});
+      gsap.fromTo(prompt,{opacity:0},{opacity:.85,duration:1,delay:.4});
+      toppleOnEnter();
+    }});
+
+    // keep drag bounds + floor measurements correct across resize/refresh
+    ScrollTrigger.addEventListener("refresh", function(){
+      if(!arena) return; measure();
+      if(draggable){ try{ draggable.applyBounds(arena); }catch(e){} }
+      if(!done){ setFloorShadow(); }
+    });
+
+    // debug hook (used by automated verification; harmless in production)
+    window.__egg={ crackOnce:crackOnce, hatch:hatch, topple:toppleOnEnter, measure:measure, createDraggable:createDraggable,
+      getR:function(){return gsap.getProperty(eggBtn,"rotation");},
+      pos:function(){return {x:gsap.getProperty(eggBtn,"x"),y:gsap.getProperty(eggBtn,"y")};},
+      jb:function(){return {x:gsap.getProperty(jb,"x"),y:gsap.getProperty(jb,"y"),rotation:gsap.getProperty(jb,"rotation"),scale:gsap.getProperty(jb,"scale"),opacity:gsap.getProperty(jb,"opacity")};},
+      draggable:function(){return draggable;}, floorY:function(){return floorY;}, set:function(o){gsap.set(eggBtn,o);} };
 
     function revealPayoff(){
       var p=document.getElementById("payoff"); p.setAttribute("aria-hidden","false");
@@ -500,6 +607,7 @@
 
   function setup(){
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, DrawSVGPlugin, MotionPathPlugin, CustomEase, ScrollToPlugin);
+    try{ if(typeof Draggable!=="undefined" && typeof InertiaPlugin!=="undefined"){ gsap.registerPlugin(Draggable, InertiaPlugin); hasPhysics=true; } }catch(e){ hasPhysics=false; }
     CustomEase.create("brindi","M0,0,C0.16,1,0.3,1,1,1");
     gsap.defaults({ease:"brindi"});
 
