@@ -313,7 +313,7 @@ a.meta-value:hover{color:var(--gold)}
 .tease-line em{color:var(--gold);font-style:italic}
 
 .finale{position:relative;min-height:100svh;background:radial-gradient(100% 80% at 50% 32%, #1c0c16 0%, #0c0409 70%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(1.2rem,4vh,2.4rem);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(.4rem,1.5vh,1rem);
   padding:10vh var(--pad);overflow:hidden}
 .finale-bg{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(60% 50% at 50% 42%, color-mix(in srgb,var(--plum) 50%,transparent), transparent 70%)}
@@ -344,15 +344,20 @@ a.meta-value:hover{color:var(--gold)}
 
 .payoff{position:relative;z-index:3;text-align:center;opacity:0;margin:0 auto;
   max-width:min(92vw,680px);display:flex;flex-direction:column;align-items:center}
-.payoff-kicker{font-family:var(--sans);font-weight:500;font-size:clamp(.64rem,1.3vw,.78rem);
-  letter-spacing:.44em;text-transform:uppercase;color:var(--gold);margin-bottom:clamp(.9rem,2.2vh,1.5rem)}
-.payoff-title{font-family:var(--serif);font-weight:300;line-height:1.08;color:var(--cream);
-  font-size:clamp(1.9rem,5.6vw,3.7rem);letter-spacing:-.012em;text-wrap:balance;max-width:14ch}
-.payoff-title em{font-style:normal;font-weight:400;white-space:nowrap}
-.payoff-title .jb{color:var(--jb-red)}
-.payoff-title .br{color:var(--gold)}
-.payoff-sub{margin-top:clamp(1.1rem,2.6vh,1.7rem);font-size:clamp(.72rem,1.3vw,.92rem);
-  letter-spacing:.28em;text-transform:uppercase;color:color-mix(in srgb,var(--cream) 62%,transparent)}
+/* partnership lockup: the hatched Jerry Bob's logo (above) + & + white Brindi's wordmark */
+.lockup-amp{font-family:var(--serif);font-style:italic;font-size:clamp(2rem,5vw,3rem);color:var(--gold);
+  line-height:1;opacity:.92;margin:clamp(.35rem,1.4vh,.7rem) 0 clamp(.4rem,1.4vh,.8rem)}
+.lockup-brindis{width:min(64%,280px);height:auto;filter:brightness(0) invert(1);opacity:.96;
+  margin-bottom:clamp(1.4rem,3.5vh,2.3rem)}
+/* Coming Soon <-> Stay Tuned flip card */
+.flip{perspective:700px;display:inline-block;margin-bottom:clamp(.8rem,2vh,1.2rem)}
+.flip-inner{position:relative;display:inline-grid;transform-style:preserve-3d;transform-origin:center}
+.flip-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  font-family:var(--sans);font-weight:600;font-size:clamp(1rem,2.6vw,1.6rem);letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);white-space:nowrap}
+.flip-back{transform:rotateX(180deg)}
+.payoff-place{font-size:clamp(.72rem,1.3vw,.92rem);letter-spacing:.28em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--cream) 62%,transparent)}
 
 /* =========================================================
    FOOTER
@@ -361,7 +366,7 @@ a.meta-value:hover{color:var(--gold)}
 .foot-line{font-family:var(--serif);font-weight:300;font-size:clamp(2rem,6vw,4rem);margin-bottom:2.8rem}
 .foot-line em{color:var(--gold)}
 .foot-logos{display:flex;align-items:center;justify-content:center;gap:clamp(20px,5vw,60px);margin-bottom:2.6rem;flex-wrap:wrap}
-.foot-brindis{width:min(60vw,300px);background:var(--cream);padding:18px 26px;border-radius:6px}
+.foot-brindis{width:min(56vw,250px);filter:brightness(0) invert(1);opacity:.96}
 .foot-jb{width:min(48vw,210px)}
 .foot-amp{font-family:var(--serif);font-size:2rem;color:var(--terracotta)}
 .foot-meta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;align-items:center;
@@ -404,7 +409,7 @@ a.meta-value:hover{color:var(--gold)}
 }
 @media(max-width:560px){
   .sound-toggle{width:40px;height:40px}
-  .foot-brindis{padding:14px 18px}
+  .foot-brindis{width:min(64vw,210px)}
 }
 
 /* =========================================================

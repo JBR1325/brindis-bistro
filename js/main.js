@@ -466,8 +466,8 @@
         .to(prompt,{opacity:0,duration:.25},.1)
         .fromTo("#jbReveal",{scale:0,opacity:0,y:24},
                 {scale:1,opacity:1,y:0,duration:1.2,ease: reduced?"power3.out":"elastic.out(1,0.55)"},.32)
-        // collapse the tall egg stage so the logo + announcement settle into a tight group
-        .to(stage,{height:logoH+64,duration: reduced?0.001:1.0,ease:"brindi"},1.25);
+        // collapse the tall egg stage so the JB logo tucks just above the "&" lockup
+        .to(stage,{height:logoH+20,duration: reduced?0.001:1.0,ease:"brindi"},1.25);
       if(!reduced){ tl.to("#jbReveal",{y:-9,duration:2.8,ease:"sine.inOut",yoyo:true,repeat:-1},2.0); }
       tl.add(revealPayoff,2.35);
     }
@@ -475,14 +475,25 @@
     function revealPayoff(){
       var p=document.getElementById("payoff"); p.setAttribute("aria-hidden","false");
       gsap.set(p,{opacity:1});
-      var split=null;
-      try{ split=new SplitText(".payoff-title",{type:"lines",mask:"lines"}); }catch(e){}
+      // the hatched Jerry Bob's logo (above) + "&" + white Brindi's wordmark = the partnership lockup
       var tl=gsap.timeline({defaults:{ease:"brindi"}});
-      tl.from(".payoff-kicker",{opacity:0,y:16,duration:.8});
-      if(split && split.lines.length){ tl.from(split.lines,{yPercent:120,opacity:0,stagger:.12,duration:1.0},"-=.25"); }
-      else { tl.from(".payoff-title",{opacity:0,y:22,duration:1.0},"-=.25"); }
-      tl.from(".payoff-sub",{opacity:0,y:14,duration:.9},"-=.4");
+      tl.from(".lockup-amp",{opacity:0,scale:.6,duration:.5})
+        .from(".lockup-brindis",{opacity:0,y:18,duration:.9},"-=.1")
+        .from(".flip",{opacity:0,y:14,duration:.7},"-=.3")
+        .from(".payoff-place",{opacity:0,y:10,duration:.7},"-=.4")
+        .add(startFlip,"-=.1");
       if(!reduced) ScrollTrigger.refresh();
+    }
+
+    // Coming Soon <-> Stay Tuned flip card, looping (static under reduced motion)
+    function startFlip(){
+      if(reduced) return;
+      var inner=document.querySelector(".flip-inner");
+      if(!inner) return;
+      gsap.set(inner,{rotationX:0});
+      gsap.timeline({repeat:-1})
+        .to(inner,{rotationX:180,duration:.8,ease:"power3.inOut",delay:2.0})
+        .to(inner,{rotationX:360,duration:.8,ease:"power3.inOut",delay:2.0});
     }
   }
 
