@@ -318,29 +318,36 @@ a.meta-value:hover{color:var(--gold)}
 .finale-bg{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(60% 50% at 50% 42%, color-mix(in srgb,var(--plum) 50%,transparent), transparent 70%)}
 
-.egg-stage{position:relative;width:min(86vw,420px);height:min(60vh,460px);
-  display:grid;place-items:center;z-index:2;opacity:0}
-.egg-glow{position:absolute;width:120%;aspect-ratio:1;border-radius:50%;
+/* ---- interactive physics egg: arena = drag bounds; all children centered via
+   left/top:50% + GSAP xPercent/yPercent:-50, with x/y as the physics offset ---- */
+.egg-arena{position:relative;width:min(92vw,560px);height:min(64svh,520px);margin:0 auto;z-index:2;opacity:0}
+.egg-floor{position:absolute;left:50%;top:50%;width:40%;height:6.5%;border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(18,7,12,.55), transparent 72%);
+  filter:blur(7px);z-index:0;opacity:0;pointer-events:none;transform:translate(-50%,-50%)}
+.egg-glow{position:absolute;left:50%;top:50%;width:min(120%,660px);aspect-ratio:1;border-radius:50%;
   background:radial-gradient(circle, color-mix(in srgb,var(--yolk) 75%,transparent) 0%, color-mix(in srgb,var(--terracotta) 40%,transparent) 35%, transparent 68%);
-  transform:scale(.2);opacity:0;filter:blur(8px);z-index:1}
-.jb-reveal{position:absolute;width:min(96%,420px);height:auto;z-index:2;
-  transform:scale(0);opacity:0;filter:drop-shadow(0 20px 50px rgba(0,0,0,.55))}
-.egg-btn{position:relative;z-index:3;width:min(60%,240px);display:block;background:none;
-  -webkit-tap-highlight-color:transparent}
-.egg-svg{width:100%;height:auto;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
-.egg-shadow{fill:rgba(0,0,0,.45)}
-.shell{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 30%,#caa);stroke-width:1.5}
-.shell-half{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 30%,#caa);stroke-width:1.5;opacity:0}
+  transform:translate(-50%,-50%) scale(.2);opacity:0;filter:blur(8px);z-index:1;pointer-events:none}
+.jb-reveal{position:absolute;left:50%;top:50%;width:min(90%,440px);height:auto;z-index:4;
+  transform:translate(-50%,-50%) scale(0);opacity:0;filter:drop-shadow(0 20px 50px rgba(0,0,0,.55));pointer-events:none}
+.egg-btn{position:absolute;left:50%;top:50%;z-index:3;width:clamp(150px,40vw,220px);display:block;
+  background:none;border:0;padding:0;transform:translate(-50%,-50%);
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.egg-btn.dragging{cursor:grabbing}
+.egg-inner{display:block}
+.egg-svg{width:100%;height:auto;overflow:visible;filter:drop-shadow(0 26px 34px rgba(0,0,0,.5))}
+.egg-shade{pointer-events:none}
+.shell{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 28%,#caa);stroke-width:1.5}
+.shell-half{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 28%,#caa);stroke-width:1.5;opacity:0}
 .egg-hl{pointer-events:none}
 #cracks{opacity:0}
-.cracks path{stroke:#5a3324;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-.burst{position:absolute;width:2px;height:2px;left:50%;top:46%;z-index:4;pointer-events:none}
+.cracks path{stroke:color-mix(in srgb,var(--plum-deep) 70%,#6b3b27);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.burst{position:absolute;left:50%;top:50%;width:2px;height:2px;z-index:5;pointer-events:none;transform:translate(-50%,-50%)}
 .spark{position:absolute;left:0;top:0;border-radius:50%;will-change:transform}
 
-.egg-prompt{position:absolute;bottom:-8%;left:50%;translate:-50% 0;z-index:3;
+.egg-prompt{position:absolute;top:1%;left:50%;translate:-50% 0;z-index:6;
   font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);
-  font-weight:500;white-space:nowrap}
-.egg-btn.spent{pointer-events:none}
+  font-weight:500;white-space:nowrap;pointer-events:none}
+.egg-btn.spent{pointer-events:none;cursor:default}
 
 .payoff{position:relative;z-index:3;text-align:center;opacity:0;margin:0 auto;
   max-width:min(92vw,680px);display:flex;flex-direction:column;align-items:center}
@@ -421,5 +428,5 @@ a.meta-value:hover{color:var(--gold)}
   .mezze-intro{width:100%;text-align:center}
   .dish-card{width:min(86vw,320px)}
   .dish-card:nth-child(even){transform:none}
-  .egg-stage{opacity:1}
+  .egg-arena{opacity:1}
 }
