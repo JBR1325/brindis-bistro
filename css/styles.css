@@ -345,8 +345,8 @@ a.meta-value:hover{color:var(--gold)}
 .payoff{position:relative;z-index:3;text-align:center;opacity:0;margin:0 auto;
   max-width:min(92vw,680px);display:flex;flex-direction:column;align-items:center}
 /* partnership lockup: the hatched Jerry Bob's logo (above) + & + white Brindi's wordmark */
-.lockup-amp{font-family:var(--serif);font-style:italic;font-size:clamp(2rem,5vw,3rem);color:var(--gold);
-  line-height:1;opacity:.92;margin:clamp(.35rem,1.4vh,.7rem) 0 clamp(.4rem,1.4vh,.8rem)}
+.lockup-amp{font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.2vw,1.9rem);color:var(--gold);
+  line-height:1;opacity:.9;letter-spacing:.01em;margin:clamp(.35rem,1.4vh,.7rem) 0 clamp(.4rem,1.4vh,.8rem)}
 .lockup-brindis{width:min(64%,280px);height:auto;filter:brightness(0) invert(1);opacity:.96;
   margin-bottom:clamp(1.4rem,3.5vh,2.3rem)}
 /* Coming Soon <-> Stay Tuned flip card */
