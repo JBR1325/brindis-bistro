@@ -16,7 +16,6 @@
   --cream-2:#EFE4D2;
   --cream-3:#E7D8BF;
   --ink:#241319;
-  --jb-red:#E8202A;
   --yolk:#F2B441;
 
   --serif:"Fraunces",Georgia,"Times New Roman",serif;
@@ -43,10 +42,40 @@ a{color:inherit;text-decoration:none}
 em{font-style:italic}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 ::selection{background:var(--saffron);color:var(--plum-deep)}
+/* visually hidden but crawlable / screen-reader accessible */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 /* ScrollSmoother needs these */
-#smooth-wrapper{overflow:hidden}
+#smooth-wrapper{overflow:hidden;position:relative;z-index:1}
 #smooth-content{will-change:transform}
+
+/* =========================================================
+   ATMOSPHERE — day → night sky (fixed, behind all content)
+   ========================================================= */
+@property --sky-top{syntax:'<color>';inherits:true;initial-value:#cfe1ef}
+@property --sky-bot{syntax:'<color>';inherits:true;initial-value:#f5e7cc}
+@property --orb-color{syntax:'<color>';inherits:true;initial-value:#ffe7b0}
+@property --orb-glow{syntax:'<color>';inherits:true;initial-value:#ffd07a}
+@property --star-op{syntax:'<number>';inherits:true;initial-value:0}
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.sky-grad{position:absolute;inset:0;background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-bot) 100%)}
+.sky-stars{position:absolute;inset:0;opacity:var(--star-op);background-repeat:no-repeat;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),
+    radial-gradient(1px 1px at 28% 33%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 44% 12%,#fff,transparent),
+    radial-gradient(1px 1px at 62% 26%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),
+    radial-gradient(1px 1px at 88% 34%,#fff,transparent),
+    radial-gradient(1px 1px at 36% 8%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 70% 6%,#fff,transparent),
+    radial-gradient(1px 1px at 54% 40%,#fff,transparent),
+    radial-gradient(1px 1px at 20% 46%,#fff,transparent)}
+.orb{position:fixed;left:0;top:0;width:clamp(64px,8vw,108px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 38% 36%,#fff 0%,var(--orb-color) 56%,color-mix(in srgb,var(--orb-color) 72%,#7a2e48) 100%);
+  box-shadow:0 0 50px 14px var(--orb-glow),0 0 130px 46px color-mix(in srgb,var(--orb-glow) 50%,transparent);
+  will-change:transform}
 
 /* ---------- shared type ---------- */
 .kicker{
@@ -78,7 +107,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .sect-lede.light{color:color-mix(in srgb,var(--cream) 80%,transparent)}
 .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad);width:100%}
 
-/* ---------- grain + progress + sound ---------- */
+/* ---------- grain + progress ---------- */
 .grain{
   position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -87,19 +116,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:95;background:color-mix(in srgb,var(--plum) 12%,transparent)}
 .scroll-progress i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:0 50%;
   background:linear-gradient(90deg,var(--saffron),var(--terracotta),var(--wine))}
-.sound-toggle{
-  position:fixed;top:18px;right:18px;z-index:96;width:44px;height:44px;border-radius:50%;
-  display:grid;place-items:center;color:var(--plum);
-  background:color-mix(in srgb,var(--cream) 70%,transparent);backdrop-filter:blur(6px);
-  border:1px solid color-mix(in srgb,var(--plum) 22%,transparent);transition:.3s var(--ease-brindi);
-}
-.sound-toggle:hover{background:var(--plum);color:var(--cream)}
-.sound-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.sound-toggle .ico-sound path:first-child,.sound-toggle .ico-muted path:first-child{fill:currentColor;stroke:none}
-.sound-toggle .ico-muted{display:none}
-.sound-toggle[aria-pressed="true"] .ico-sound{display:none}
-.sound-toggle[aria-pressed="true"] .ico-muted{display:block}
-
 /* ---------- preloader ---------- */
 .preloader{position:fixed;inset:0;z-index:100;background:var(--plum-deep);
   display:grid;place-items:center;color:var(--cream)}
@@ -117,9 +133,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
    ACT 1 — HERO
    ========================================================= */
 .hero{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;
-  background:
-    radial-gradient(120% 90% at 50% 8%, #fbf5ea 0%, var(--cream) 42%, var(--cream-2) 100%);
-}
+  background:transparent}
 .hero-emblem{position:absolute;width:min(120vh,1100px);aspect-ratio:1;border-radius:50%;
   border:1px solid color-mix(in srgb,var(--plum) 9%,transparent);
   top:50%;left:50%;translate:-50% -50%;
@@ -142,28 +156,35 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 @keyframes cue{0%{transform:translateY(0)}60%,100%{transform:translateY(80px)}}
 
 .ember-field{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-.ember{position:absolute;bottom:-10px;width:6px;height:6px;border-radius:50%;
-  background:radial-gradient(circle,var(--gold),var(--terracotta));filter:blur(.4px);opacity:0}
+.ember{position:absolute;top:0;left:0;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle,var(--gold),var(--terracotta));filter:blur(.4px);opacity:0;will-change:transform}
 
 /* =========================================================
    ACT 2 — THE FIRE (pinned story)
    ========================================================= */
-.fire{position:relative;min-height:100svh;background:
-   radial-gradient(120% 80% at 50% 120%, #3a1626 0%, var(--plum-deep) 60%, #170810 100%);
-   color:var(--cream);overflow:hidden}
-.fire-stage{position:absolute;inset:0;display:grid;place-items:center;padding:var(--pad)}
+/* "The Oven" — a warm morning hearth (transparent so the day sky shows; NOT a dark dip) */
+.fire{position:relative;min-height:100svh;background:transparent;color:var(--plum);overflow:hidden}
+.fire-stage{position:absolute;inset:0;display:grid;place-items:center;padding:var(--pad);z-index:1}
 .fire-line{position:absolute;max-width:min(92vw,1000px);text-align:center;opacity:0}
 .fire-line .t{font-family:var(--serif);font-weight:300;line-height:1.06;
-  font-size:clamp(1.9rem,6vw,5rem);letter-spacing:-.01em;color:var(--cream)}
-.fire-line em{color:var(--gold);font-weight:400}
-.fire-glow{position:absolute;left:50%;bottom:-30%;translate:-50% 0;width:80vw;height:80vw;
-  background:radial-gradient(circle,color-mix(in srgb,var(--terracotta) 55%,transparent),transparent 60%);
-  filter:blur(40px);opacity:.5;pointer-events:none}
+  font-size:clamp(1.9rem,6vw,5rem);letter-spacing:-.01em;color:var(--plum)}
+.fire-line em{color:var(--wine);font-weight:400}
+.fire-glow{position:absolute;left:50%;bottom:-26%;translate:-50% 0;width:82vw;height:82vw;z-index:0;
+  background:radial-gradient(circle,color-mix(in srgb,var(--terracotta) 64%,transparent) 0%,
+    color-mix(in srgb,var(--saffron) 30%,transparent) 38%, transparent 62%);
+  filter:blur(46px);opacity:.6;pointer-events:none;will-change:opacity,transform}
+.oven-temp{position:absolute;left:50%;bottom:11%;translate:-50% 0;z-index:2;text-align:center;
+  font-family:var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--wine);opacity:.9}
+.oven-temp b{display:block;font-family:var(--serif);font-weight:400;letter-spacing:.02em;
+  font-size:clamp(2rem,6vw,3.4rem);color:var(--terracotta);text-transform:none}
+.oven-temp span{font-size:clamp(.6rem,1.1vw,.72rem)}
 
 /* =========================================================
    ACT 3 — MEZZE (horizontal pin)
    ========================================================= */
-.mezze{background:linear-gradient(var(--cream),var(--cream-2));position:relative}
+.mezze{position:relative;background:linear-gradient(180deg,
+  color-mix(in srgb,var(--cream) 38%,transparent),
+  color-mix(in srgb,var(--cream-2) 56%,transparent))}
 .mezze-viewport{height:100svh;overflow:hidden;display:flex;align-items:center}
 .mezze-track{display:flex;align-items:center;gap:clamp(28px,4vw,64px);padding-inline:var(--pad);will-change:transform}
 .mezze-intro{flex:0 0 auto;width:min(78vw,440px);padding-right:2vw}
@@ -216,7 +237,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
    ACT 4 — FROM THE WOODFIRE (dark)
    ========================================================= */
 .woodfire{position:relative;background:
-   radial-gradient(140% 100% at 50% 0%, #3c1727 0%, var(--plum-deep) 55%, #160810 100%);
+   radial-gradient(140% 100% at 50% 0%, color-mix(in srgb,#3c1727 68%,transparent) 0%,
+     color-mix(in srgb,var(--plum-deep) 74%,transparent) 55%, color-mix(in srgb,#160810 82%,transparent) 100%);
    color:var(--cream);padding:clamp(90px,14vh,180px) 0;overflow:hidden}
 .woodfire::after{content:'';position:absolute;left:0;right:0;bottom:0;height:42vh;pointer-events:none;
   background:linear-gradient(0deg,color-mix(in srgb,var(--terracotta) 30%,transparent),transparent)}
@@ -240,11 +262,74 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .woodfire-photos .photo-slot{box-shadow:0 30px 60px -30px #000}
 
 /* =========================================================
-   ACT 5 — FLATBREAD & SALADS
+   ACT 6 — THE EXPERIENCE (wine · sangria · live music · patio)
    ========================================================= */
-.flat{background:linear-gradient(var(--cream-2),var(--cream));padding:clamp(90px,14vh,170px) 0}
-.flat-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(40px,7vw,120px);align-items:start}
-.flat-col .sect-title{margin:.6rem 0 2rem}
+.experience{position:relative;overflow:hidden;color:var(--cream);padding:clamp(90px,14vh,180px) 0;
+  background:linear-gradient(180deg, color-mix(in srgb,var(--plum-deep) 68%,transparent) 0%,
+    color-mix(in srgb,#160810 82%,transparent) 100%)}
+.exp-head{max-width:var(--maxw);margin:0 auto 3.4rem;text-align:center;position:relative;z-index:2}
+.exp-head .sect-title{color:var(--cream)}
+.exp-head .sect-title em{color:var(--gold)}
+.exp-head .sect-lede{margin:1.4rem auto 0}
+.equalizer{display:flex;align-items:flex-end;justify-content:center;gap:5px;height:34px;margin:1.6rem auto 0}
+.equalizer i{display:block;width:5px;height:34%;border-radius:3px;
+  background:linear-gradient(var(--gold),var(--terracotta));transform-origin:50% 100%}
+.gallery{position:relative;z-index:2}
+.gallery-viewport{overflow:hidden}
+.gallery-track{display:flex;gap:clamp(18px,2.4vw,32px);padding:6px 0;cursor:grab;will-change:transform;width:max-content}
+.gallery-track:active{cursor:grabbing}
+.g-card{flex:0 0 auto;width:min(74vw,330px)}
+.g-card .photo-slot{margin-bottom:1.1rem;box-shadow:0 30px 60px -32px #000}
+.g-title{font-family:var(--serif);font-weight:400;color:var(--cream);font-size:clamp(1.3rem,2.2vw,1.7rem);margin-bottom:.4rem}
+.g-desc{font-size:.92rem;font-weight:300;line-height:1.55;color:color-mix(in srgb,var(--cream) 72%,transparent);max-width:32ch}
+.gallery-hint{margin-top:1.8rem;text-align:center;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--gold) 80%,transparent)}
+
+/* =========================================================
+   ACT 3 — BY DAY: WOOD-FIRED FLATBREAD LUNCH (+ LUNCH⇆DINNER flip)
+   ========================================================= */
+.lunch{position:relative;padding:clamp(90px,14vh,175px) 0;color:var(--plum);
+  background:linear-gradient(180deg,
+    color-mix(in srgb,var(--cream) 28%,transparent) 0%,
+    color-mix(in srgb,var(--cream) 60%,transparent) 50%,
+    color-mix(in srgb,var(--cream) 26%,transparent) 100%)}
+.lunch-head{max-width:760px;margin:0 auto 3rem;text-align:center}
+.lunch-head .sect-title{margin:.5rem 0 1.3rem}
+.lunch-head .sect-lede{margin:0 auto}
+.lunch-sub{font-family:var(--serif);font-weight:400;color:var(--plum);font-size:clamp(1.6rem,3vw,2.3rem);margin:.4rem 0 1.4rem}
+.bake{width:clamp(96px,13vw,150px);height:auto;display:block;margin:1.8rem auto 0;overflow:visible}
+.bake #breadCooked{display:none}
+.bake #breadMorph{fill:color-mix(in srgb,var(--saffron) 55%,var(--cream));
+  stroke:color-mix(in srgb,var(--terracotta) 55%,transparent);stroke-width:2.5}
+.lunch-menu{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(40px,7vw,110px);align-items:start;
+  max-width:var(--maxw);margin:0 auto}
+
+/* LUNCH ⇆ DINNER flip scene */
+.scene{max-width:1000px;margin:0 auto 4.5rem;text-align:center}
+.scene-toggle{position:relative;display:inline-flex;padding:5px;border-radius:3em;margin-bottom:2rem;
+  background:color-mix(in srgb,var(--plum) 12%,transparent)}
+.lt-btn{position:relative;z-index:2;font-family:var(--sans);font-weight:600;font-size:.74rem;letter-spacing:.2em;
+  text-transform:uppercase;color:color-mix(in srgb,var(--plum) 70%,transparent);padding:.7em 1.8em;border-radius:3em;transition:color .4s}
+.lt-btn.is-on{color:var(--cream)}
+.lt-thumb{position:absolute;z-index:1;top:5px;left:5px;bottom:5px;width:calc(50% - 5px);border-radius:3em;
+  background:var(--terracotta);transition:transform .5s var(--ease-brindi),background .5s}
+.scene.is-dinner .lt-thumb{transform:translateX(100%);background:var(--wine)}
+.scene-stage{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,56px);align-items:center;text-align:left}
+.scene.is-dinner .scene-media{order:2}
+.scene-media .photo-slot{margin:0}
+.scene-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s var(--ease-brindi);z-index:2}
+/* only the active mode's image shows (must beat the generic .photo-slot img.loaded rule) */
+.scene[data-mode="lunch"] .scene-img-dinner,.scene[data-mode="dinner"] .scene-img-lunch{opacity:0}
+.scene[data-mode="lunch"] .scene-img-lunch.loaded,.scene[data-mode="dinner"] .scene-img-dinner.loaded{opacity:1}
+.scene-copy{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}
+.scene-chip{font-family:var(--sans);font-weight:500;font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--terracotta);border:1px solid color-mix(in srgb,var(--terracotta) 40%,transparent);padding:.32em .9em;border-radius:2em}
+.scene.is-dinner .scene-chip{color:var(--wine);border-color:color-mix(in srgb,var(--wine) 45%,transparent)}
+.scene-headline{font-family:var(--serif);font-weight:300;color:var(--plum);font-size:clamp(1.6rem,3.4vw,2.6rem);line-height:1.05}
+.scene-sub{font-size:clamp(.95rem,1.5vw,1.1rem);font-weight:300;line-height:1.6;color:color-mix(in srgb,var(--ink) 74%,transparent);max-width:36ch}
+.scene-price{font-family:var(--serif);font-size:1.25rem;color:var(--terracotta)}
+.scene.is-dinner .scene-price{color:var(--wine)}
+
 .tag-list{list-style:none;display:flex;flex-wrap:wrap;gap:14px}
 .tag-list li{font-family:var(--serif);font-size:clamp(1.1rem,2vw,1.7rem);color:var(--plum);
   border:1px solid color-mix(in srgb,var(--plum) 26%,transparent);border-radius:3em;
@@ -285,7 +370,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
    ACT 7 — THE TABLE
    ========================================================= */
 .table{background:
-   radial-gradient(120% 120% at 50% 50%, #3a1626 0%, var(--plum) 60%, var(--plum-deep) 100%);
+   radial-gradient(120% 120% at 50% 50%, color-mix(in srgb,#3a1626 60%,transparent) 0%,
+     color-mix(in srgb,var(--plum) 66%,transparent) 60%, color-mix(in srgb,var(--plum-deep) 80%,transparent) 100%);
    color:var(--cream);min-height:100svh;display:grid;place-items:center;text-align:center;padding:var(--pad) }
 .table-inner{display:flex;flex-direction:column;align-items:center}
 .table-quote{font-family:var(--serif);font-weight:300;line-height:1.02;margin:1.6rem 0 2.6rem;
@@ -303,60 +389,22 @@ a.meta-value:hover{color:var(--gold)}
 .btn-menu:hover{background:var(--cream);transform:translateY(-2px)}
 
 /* =========================================================
-   ACT 8 — TEASE + EGG FINALE
+   FINALE — "Stay Tuned for Big Things"
    ========================================================= */
-.tease{position:relative;min-height:100svh;background:linear-gradient(var(--plum-deep),#120610);
-  color:var(--cream);overflow:hidden}
-.tease-stage{position:absolute;inset:0;display:grid;place-items:center}
-.tease-line{position:absolute;text-align:center;opacity:0}
-.tease-line .t{font-family:var(--serif);font-weight:300;font-size:clamp(2.4rem,8vw,6rem);color:var(--cream)}
-.tease-line em{color:var(--gold);font-style:italic}
-
-.finale{position:relative;min-height:100svh;background:radial-gradient(100% 80% at 50% 32%, #1c0c16 0%, #0c0409 70%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(.4rem,1.5vh,1rem);
-  padding:10vh var(--pad);overflow:hidden}
+.finale{position:relative;min-height:100svh;background:transparent;
+  display:grid;place-items:center;padding:12vh var(--pad);overflow:hidden;color:var(--cream)}
 .finale-bg{position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(60% 50% at 50% 42%, color-mix(in srgb,var(--plum) 50%,transparent), transparent 70%)}
-
-.egg-stage{position:relative;width:min(86vw,420px);height:min(60vh,460px);
-  display:grid;place-items:center;z-index:2;opacity:0}
-.egg-glow{position:absolute;width:120%;aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle, color-mix(in srgb,var(--yolk) 75%,transparent) 0%, color-mix(in srgb,var(--terracotta) 40%,transparent) 35%, transparent 68%);
-  transform:scale(.2);opacity:0;filter:blur(8px);z-index:1}
-.jb-reveal{position:absolute;width:min(96%,420px);height:auto;z-index:2;
-  transform:scale(0);opacity:0;filter:drop-shadow(0 20px 50px rgba(0,0,0,.55))}
-.egg-btn{position:relative;z-index:3;width:min(60%,240px);display:block;background:none;
-  -webkit-tap-highlight-color:transparent}
-.egg-svg{width:100%;height:auto;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
-.egg-shadow{fill:rgba(0,0,0,.45)}
-.shell{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 30%,#caa);stroke-width:1.5}
-.shell-half{fill:url(#shellGrad);stroke:color-mix(in srgb,var(--plum) 30%,#caa);stroke-width:1.5;opacity:0}
-.egg-hl{pointer-events:none}
-#cracks{opacity:0}
-.cracks path{stroke:#5a3324;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-.burst{position:absolute;width:2px;height:2px;left:50%;top:46%;z-index:4;pointer-events:none}
-.spark{position:absolute;left:0;top:0;border-radius:50%;will-change:transform}
-
-.egg-prompt{position:absolute;bottom:-8%;left:50%;translate:-50% 0;z-index:3;
-  font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);
-  font-weight:500;white-space:nowrap}
-.egg-btn.spent{pointer-events:none}
-
-.payoff{position:relative;z-index:3;text-align:center;opacity:0;margin:0 auto;
-  max-width:min(92vw,680px);display:flex;flex-direction:column;align-items:center}
-/* partnership lockup: the hatched Jerry Bob's logo (above) + & + white Brindi's wordmark */
-.lockup-amp{font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.2vw,1.9rem);color:var(--gold);
-  line-height:1;opacity:.9;letter-spacing:.01em;margin:clamp(.35rem,1.4vh,.7rem) 0 clamp(.4rem,1.4vh,.8rem)}
-.lockup-brindis{width:min(64%,280px);height:auto;filter:brightness(0) invert(1);opacity:.96;
-  margin-bottom:clamp(1.4rem,3.5vh,2.3rem)}
-/* Coming Soon <-> Stay Tuned flip card */
-.flip{perspective:700px;display:inline-block;margin-bottom:clamp(.8rem,2vh,1.2rem)}
-.flip-inner{position:relative;display:inline-grid;transform-style:preserve-3d;transform-origin:center}
-.flip-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  font-family:var(--sans);font-weight:600;font-size:clamp(1rem,2.6vw,1.6rem);letter-spacing:.22em;
-  text-transform:uppercase;color:var(--gold);white-space:nowrap}
-.flip-back{transform:rotateX(180deg)}
-.payoff-place{font-size:clamp(.72rem,1.3vw,.92rem);letter-spacing:.28em;text-transform:uppercase;
+  background:radial-gradient(60% 50% at 50% 46%, color-mix(in srgb,var(--plum) 50%,transparent), transparent 70%)}
+.finale-inner{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;
+  align-items:center;gap:clamp(1rem,3vh,1.8rem)}
+.finale-kicker{margin-bottom:.2rem}
+.finale-line{font-family:var(--serif);font-weight:300;line-height:1.0;letter-spacing:-.02em;
+  font-size:clamp(2.6rem,9vw,7rem);color:var(--cream)}
+.finale-line .fl{display:block;padding:.06em 0}
+.finale-line em{color:var(--gold);font-style:italic}
+.finale-underline{width:min(58vw,360px);height:14px;overflow:visible}
+.finale-underline path{fill:none;stroke:var(--terracotta);stroke-width:2.4;stroke-linecap:round}
+.finale-place{font-size:clamp(.74rem,1.4vw,.95rem);letter-spacing:.26em;text-transform:uppercase;
   color:color-mix(in srgb,var(--cream) 62%,transparent)}
 
 /* =========================================================
@@ -367,8 +415,6 @@ a.meta-value:hover{color:var(--gold)}
 .foot-line em{color:var(--gold)}
 .foot-logos{display:flex;align-items:center;justify-content:center;gap:clamp(20px,5vw,60px);margin-bottom:2.6rem;flex-wrap:wrap}
 .foot-brindis{width:min(56vw,250px);filter:brightness(0) invert(1);opacity:.96}
-.foot-jb{width:min(48vw,210px)}
-.foot-amp{font-family:var(--serif);font-size:2rem;color:var(--terracotta)}
 .foot-meta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;align-items:center;
   font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--cream) 70%,transparent)}
 .foot-meta a:hover{color:var(--gold)}
@@ -400,7 +446,9 @@ a.meta-value:hover{color:var(--gold)}
    RESPONSIVE
    ========================================================= */
 @media(max-width:860px){
-  .flat-grid{grid-template-columns:1fr;gap:60px}
+  .lunch-menu{grid-template-columns:1fr;gap:54px}
+  .scene-stage{grid-template-columns:1fr;gap:24px}
+  .scene.is-dinner .scene-media{order:0}
   .sweets-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}
   .woodfire-photos{grid-template-columns:1fr}
   .entree{grid-template-columns:auto 1fr;row-gap:.4rem}
@@ -408,7 +456,6 @@ a.meta-value:hover{color:var(--gold)}
   .dish-card:nth-child(even){transform:none}
 }
 @media(max-width:560px){
-  .sound-toggle{width:40px;height:40px}
   .foot-brindis{width:min(64vw,210px)}
 }
 
@@ -417,14 +464,18 @@ a.meta-value:hover{color:var(--gold)}
    ========================================================= */
 @media(prefers-reduced-motion:reduce){
   .scroll-cue i::after{animation:none}
-  .fire-line,.tease-line{position:relative;opacity:1!important;margin:1.4rem 0}
-  .fire-stage,.tease-stage{position:relative;inset:auto;height:auto;padding-block:18vh}
-  .fire,.tease{min-height:auto}
+  .fire-line{position:relative;opacity:1!important;margin:1.4rem 0}
+  .fire-stage{position:relative;inset:auto;height:auto;padding-block:18vh}
+  .fire{min-height:auto}
   /* unwind the horizontal mezze pin into a stacked grid */
   .mezze-viewport{height:auto;overflow:visible;padding-block:14vh}
   .mezze-track{flex-wrap:wrap;transform:none!important;justify-content:center;gap:40px}
   .mezze-intro{width:100%;text-align:center}
   .dish-card{width:min(86vw,320px)}
   .dish-card:nth-child(even){transform:none}
-  .egg-stage{opacity:1}
+  /* gallery → native horizontal scroll-snap (no Draggable) */
+  .gallery-viewport{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .gallery-track{transform:none!important}
+  .g-card{scroll-snap-align:center}
+  .equalizer{display:none}
 }

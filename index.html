@@ -3,15 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brindi's Bistro — Authentic Woodfire Cuisine · Green Valley, Arizona</title>
-<meta name="description" content="Brindi's Bistro — Turkish & Mediterranean woodfire cuisine in Green Valley, Arizona. Est. 2024.">
+
+<!-- ===== SEO: primary meta ===== -->
+<title>Brindi's Bistro &amp; Bar — Wood-Fired Mediterranean | Green Valley, AZ</title>
+<meta name="description" content="Wood-fired Mediterranean &amp; Turkish food in Green Valley, AZ. Quick flatbread lunches on the misted patio; dinners with wine, sangria &amp; live music. Reserve your table.">
+<link rel="canonical" href="https://www.brindisbistrobar.com/">
+<!-- GO-LIVE: delete the next line to allow indexing once real photos + info are in -->
 <meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Brindi's Bistro &amp; Bar">
+<meta name="theme-color" content="#4A1E33">
+<meta name="geo.region" content="US-AZ">
+<meta name="geo.placename" content="Green Valley">
+<!-- PLACEHOLDER geo — set real coordinates before go-live -->
+<meta name="geo.position" content="31.8540;-110.9937">
+<meta name="ICBM" content="31.8540, -110.9937">
+<!-- GO-LIVE: add your Google Search Console verification meta here -->
+
+<!-- ===== Open Graph / Twitter (social cards) ===== -->
+<meta property="og:type" content="restaurant">
+<meta property="og:site_name" content="Brindi's Bistro &amp; Bar">
+<meta property="og:title" content="Brindi's Bistro &amp; Bar — Wood-Fired Mediterranean in Green Valley, AZ">
+<meta property="og:description" content="Quick wood-fired flatbread lunches on the misted patio; full Mediterranean dinners with wine, sangria &amp; live music. Green Valley, Arizona.">
+<meta property="og:url" content="https://www.brindisbistrobar.com/">
+<meta property="og:image" content="https://www.brindisbistrobar.com/assets/og-brindis.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Brindi's Bistro &amp; Bar — Wood-Fired Mediterranean, Green Valley AZ">
+<meta name="twitter:description" content="Quick flatbread lunches on the misted patio; dinners with wine, sangria &amp; live music.">
+<meta name="twitter:image" content="https://www.brindisbistrobar.com/assets/og-brindis.jpg">
+
+<!-- ===== icons / manifest ===== -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<!-- ===== fonts (preconnected) ===== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="preload" as="image" href="assets/brindis-logo.png">
+
+<link rel="stylesheet" href="css/styles.css?v=5">
+
+<!-- ===== Restaurant structured data (Schema.org JSON-LD) =====
+     PLACEHOLDER address / hours / geo / social links — fill with real data before go-live. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "@id": "https://www.brindisbistrobar.com/#restaurant",
+  "name": "Brindi's Bistro & Bar",
+  "url": "https://www.brindisbistrobar.com/",
+  "image": [
+    "https://www.brindisbistrobar.com/assets/og-brindis.jpg",
+    "https://www.brindisbistrobar.com/assets/brindis-logo.png"
+  ],
+  "description": "Wood-fired Mediterranean and Turkish restaurant and bar in Green Valley, Arizona — quick flatbread lunches on a large misted patio and full dinners with wine, sangria and live music.",
+  "servesCuisine": ["Mediterranean", "Turkish", "Middle Eastern"],
+  "priceRange": "$$",
+  "telephone": "+1-520-849-6188",
+  "acceptsReservations": "True",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "PLACEHOLDER — street address",
+    "addressLocality": "Green Valley",
+    "addressRegion": "AZ",
+    "postalCode": "PLACEHOLDER",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "31.8540",
+    "longitude": "-110.9937"
+  },
+  "areaServed": ["Green Valley", "Sahuarita", "Tucson"],
+  "hasMenu": "https://www.brindisbistrobar.com/#menu",
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "11:00", "closes": "15:00", "name": "Lunch" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "17:00", "closes": "21:00", "name": "Dinner" }
+  ],
+  "sameAs": [
+    "https://www.facebook.com/PLACEHOLDER",
+    "https://www.instagram.com/PLACEHOLDER"
+  ]
+}
+</script>
 </head>
 <body>
+
+<!-- ============ ATMOSPHERE — day → night sky (fixed, behind everything) ============ -->
+<div class="sky" id="sky" aria-hidden="true">
+  <div class="sky-grad"></div>
+  <div class="sky-stars"></div>
+  <div class="orb" id="orb"></div>
+</div>
 
 <!-- ============ FIXED UI (outside smooth wrapper) ============ -->
 <div class="grain" aria-hidden="true"></div>
@@ -26,11 +113,6 @@
 </div>
 
 <div class="scroll-progress" aria-hidden="true"><i id="progressBar"></i></div>
-
-<button class="sound-toggle" id="soundToggle" aria-pressed="false" aria-label="Toggle sound effects" title="Sound">
-  <svg viewBox="0 0 24 24" class="ico-sound"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path class="wave" d="M16 8.5a4 4 0 0 1 0 7"/><path class="wave2" d="M18.5 6a7 7 0 0 1 0 12"/></svg>
-  <svg viewBox="0 0 24 24" class="ico-muted"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
-</button>
 
 <!-- ============ MENU LIGHTBOX ============ -->
 <div class="menu-modal" id="menuModal" aria-hidden="true" role="dialog" aria-label="Full menu">
@@ -48,16 +130,19 @@
 <div id="smooth-content">
 <main>
 
+  <!-- crawlable intro + NAP (visually hidden; the visual story is told in the acts below) -->
+  <p class="sr-only">Brindi&rsquo;s Bistro &amp; Bar is a wood-fired Mediterranean and Turkish restaurant and bar in Green Valley, Arizona. By day we serve quick wood-fired flatbread lunches on our large misted patio; by night, a full Mediterranean dinner with wine, sangria, live music, indoor dining and a cozy bar. Lunch and dinner Tuesday through Sunday. Reservations: <a href="tel:5208496188">520-849-6188</a>.</p>
+
   <!-- ===== ACT 1 — HERO ===== -->
   <section class="hero" id="hero">
     <div class="ember-field" id="emberHero" aria-hidden="true"></div>
     <div class="hero-emblem" aria-hidden="true"></div>
     <div class="hero-inner">
       <p class="kicker hero-kicker">Green Valley &middot; Arizona</p>
-      <img class="hero-logo" src="assets/brindis-logo.png" alt="Brindi's Bistro" decoding="async">
+      <img class="hero-logo" src="assets/brindis-logo.png" alt="Brindi's Bistro &amp; Bar" fetchpriority="high" decoding="async">
       <h1 class="hero-title">
-        <span class="line">Authentic</span>
-        <span class="line"><em>Woodfire</em> Cuisine</span>
+        <span class="line">Authentic <em>Wood-Fired</em></span>
+        <span class="line">Mediterranean Cuisine</span>
       </h1>
       <p class="hero-tag">Turkish &amp; Mediterranean &middot; Est.&nbsp;2024</p>
     </div>
@@ -68,11 +153,65 @@
   <section class="fire" id="fire">
     <div class="fire-stage">
       <div class="fire-line" data-dir="up"><span class="t">It begins with <em>fire.</em></span></div>
-      <div class="fire-line" data-dir="left"><span class="t">Wood-smoke, olive oil, <em>a little patience.</em></span></div>
+      <div class="fire-line" data-dir="left"><span class="t">Olive wood, sea salt, <em>a little patience.</em></span></div>
       <div class="fire-line" data-dir="right"><span class="t">Recipes carried from <em>Anatolia</em> to the Sonoran desert.</span></div>
-      <div class="fire-line" data-dir="scale"><span class="t">Pulled from the flame &mdash; <em>this is Brindi's.</em></span></div>
+      <div class="fire-line" data-dir="scale"><span class="t">Everything here meets <em>the flame.</em></span></div>
     </div>
     <div class="fire-glow" aria-hidden="true"></div>
+    <div class="oven-temp" aria-hidden="true"><b id="ovenTemp">0&deg;</b><span>Our wood-fired oven</span></div>
+  </section>
+
+  <!-- ===== ACT 3 — BY DAY: QUICK WOOD-FIRED FLATBREAD LUNCH ===== -->
+  <section class="lunch" id="lunch">
+    <div class="wrap">
+      <header class="lunch-head">
+        <p class="kicker">By Day &middot; On the Patio</p>
+        <h2 class="sect-title">Wood-Fired<br><em>Flatbread, Fast</em></h2>
+        <p class="sect-lede">Hand-stretched dough blistered in the oven in about ninety seconds, carried straight to our big misted patio. A quick, bright Mediterranean lunch.</p>
+        <svg class="bake" viewBox="0 0 240 160" aria-hidden="true">
+          <path id="breadCooked" d="M120 22 C170 12 226 52 214 84 C228 118 168 152 116 138 C68 150 12 110 26 76 C14 44 74 32 120 22 Z"/>
+          <path id="breadMorph" d="M120 20 C172 20 220 47 220 80 C220 113 172 140 120 140 C68 140 20 113 20 80 C20 47 68 20 120 20 Z"/>
+        </svg>
+      </header>
+
+      <!-- LUNCH ⇆ DINNER flip scene -->
+      <div class="scene" id="lunchScene" data-mode="lunch">
+        <div class="scene-toggle" role="tablist" aria-label="See lunch or dinner">
+          <button class="lt-btn is-on" data-mode="lunch" role="tab" aria-selected="true">Lunch</button>
+          <button class="lt-btn" data-mode="dinner" role="tab" aria-selected="false">Dinner</button>
+          <i class="lt-thumb" aria-hidden="true"></i>
+        </div>
+        <div class="scene-stage">
+          <div class="scene-media">
+            <div class="photo-slot r169">
+              <div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5a8 4 0 0 1 16 0c0 2.2-3 4-8 4s-8-1.8-8-4Z"/><path d="M8 8.4h.01M11.5 7.6h.01M15 8.4h.01"/></svg><span class="ph-tag">Brindi&rsquo;s</span></div>
+              <img class="scene-img scene-img-lunch" src="assets/photos/lunch-flatbread.jpg?v=3" alt="Wood-fired flatbread lunch on the misted patio at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()">
+              <img class="scene-img scene-img-dinner" src="assets/photos/dinner-plated.jpg?v=3" alt="Candlelit Mediterranean dinner at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()">
+            </div>
+          </div>
+          <div class="scene-copy">
+            <span class="scene-chip" id="sceneChip">Midday</span>
+            <h3 class="scene-headline" id="sceneHeadline">Wood-fired in ~90 seconds.</h3>
+            <p class="scene-sub" id="sceneSub">Fast and casual on our big misted patio &mdash; flatbreads ready in minutes.</p>
+            <p class="scene-price" id="scenePrice">Flatbreads &middot; $12&ndash;15</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- flatbread + salad menu (light lunch fare) -->
+      <div class="lunch-menu">
+        <div class="lunch-col">
+          <p class="kicker">Stone &amp; Flame</p>
+          <h3 class="lunch-sub">Flatbreads</h3>
+          <ul class="tag-list" id="flatList"><!-- injected --></ul>
+        </div>
+        <div class="lunch-col">
+          <p class="kicker">From the Garden</p>
+          <h3 class="lunch-sub">Salads</h3>
+          <ul class="line-list" id="saladList"><!-- injected --></ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ===== ACT 3 — MEZZE (horizontal pin) ===== -->
@@ -95,26 +234,56 @@
     <div class="ember-field" id="emberWood" aria-hidden="true"></div>
     <div class="wrap">
       <header class="woodfire-head">
-        <p class="kicker light">The Flame</p>
+        <p class="kicker light">By Night &middot; The Feast</p>
         <h2 class="sect-title huge">From the<br><em>Woodfire</em></h2>
-        <p class="sect-lede light">Everything meets the open flame &mdash; charred at the edges, tender at the heart, plated with rice, market vegetables and house yogurt.</p>
+        <p class="sect-lede light">As the sun drops, the oven hits its stride &mdash; kebabs, shanks and whole fish charred over olive wood, plated with rice, market vegetables and house yogurt.</p>
       </header>
       <div class="entree-list" id="entreeList"><!-- injected --></div>
     </div>
   </section>
 
-  <!-- ===== ACT 5 — FLATBREAD & SALADS ===== -->
-  <section class="flat" id="flat">
-    <div class="wrap flat-grid">
-      <div class="flat-col">
-        <p class="kicker">Stone &amp; Flame</p>
-        <h2 class="sect-title">Wood-Fired<br>Flatbread</h2>
-        <ul class="tag-list" id="flatList"><!-- injected --></ul>
-      </div>
-      <div class="flat-col salads">
-        <p class="kicker">From the Garden</p>
-        <h2 class="sect-title">Salads</h2>
-        <ul class="line-list" id="saladList"><!-- injected --></ul>
+  <!-- ===== ACT 6 — THE EXPERIENCE: WINE · SANGRIA · LIVE MUSIC · PATIO ===== -->
+  <section class="experience" id="experience">
+    <div class="ember-field" id="emberExp" aria-hidden="true"></div>
+    <div class="wrap">
+      <header class="exp-head">
+        <p class="kicker light">After Dark</p>
+        <h2 class="sect-title">Wine, Sangria<br><em>&amp; Live Music</em></h2>
+        <div class="equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="sect-lede light">When the desert cools, the patio fills. Glasses pour, the music starts, and dinner becomes an evening &mdash; under the misters and the stars.</p>
+      </header>
+
+      <div class="gallery" id="gallery">
+        <div class="gallery-viewport" id="galleryViewport">
+          <div class="gallery-track" id="galleryTrack">
+            <article class="g-card">
+              <div class="photo-slot r45"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z"/><path d="M9 15 15 9"/></svg><span class="ph-tag">Brindi&rsquo;s</span></div><img src="assets/photos/patio-night.jpg?v=3" alt="The large misted patio at night with string lights at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()"></div>
+              <h3 class="g-title">The Misted Patio</h3>
+              <p class="g-desc">Our big patio, cooled by misters and strung with lights &mdash; desert evenings made easy.</p>
+            </article>
+            <article class="g-card">
+              <div class="photo-slot r45"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg><span class="ph-tag">Brindi&rsquo;s</span></div><img src="assets/photos/live-music.jpg?v=3" alt="Live acoustic music corner at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()"></div>
+              <h3 class="g-title">Live Music</h3>
+              <p class="g-desc">Local players most weekends &mdash; oud, guitar and a warm, easy room.</p>
+            </article>
+            <article class="g-card">
+              <div class="photo-slot r45"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg><span class="ph-tag">Brindi&rsquo;s</span></div><img src="assets/photos/indoor-dining.jpg?v=3" alt="Warm candlelit indoor dining room at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()"></div>
+              <h3 class="g-title">Indoor Dining</h3>
+              <p class="g-desc">A candlelit room and warm lamplight for when you&rsquo;d rather be inside.</p>
+            </article>
+            <article class="g-card">
+              <div class="photo-slot r45"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l-1 6a5 5 0 0 1-10 0L6 3Z"/><path d="M12 14v5M8 21h8"/></svg><span class="ph-tag">Brindi&rsquo;s</span></div><img src="assets/photos/snug-bar.jpg?v=3" alt="A small cozy bar with a few stools at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()"></div>
+              <h3 class="g-title">A Little Bar</h3>
+              <p class="g-desc">Pull up for a glass of wine or sangria before your table &mdash; just a few good stools.</p>
+            </article>
+            <article class="g-card">
+              <div class="photo-slot r45"><div class="ph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l-3 8v6h2v2H7v-2h2v-6L6 3Z"/></svg><span class="ph-tag">Brindi&rsquo;s</span></div><img src="assets/photos/sangria-pour.jpg?v=3" alt="House sangria being poured at Brindi&rsquo;s Bistro &amp; Bar, Green Valley AZ" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()"></div>
+              <h3 class="g-title">Wine &amp; Sangria</h3>
+              <p class="g-desc">House sangria, Mediterranean reds and something cold, bright and citrusy.</p>
+            </article>
+          </div>
+        </div>
+        <p class="gallery-hint" id="galleryHint">Drag to explore &rarr;</p>
       </div>
     </div>
   </section>
@@ -143,6 +312,15 @@
         <span class="ql line">Stay for the <em>table.</em></span>
       </blockquote>
       <div class="table-meta">
+        <!-- PLACEHOLDER hours — replace with real lunch/dinner hours before go-live -->
+        <div class="meta-block">
+          <span class="meta-label">Lunch</span>
+          <span class="meta-value hours">Tue&ndash;Sun &middot; 11&ndash;3</span>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">Dinner</span>
+          <span class="meta-value hours">Tue&ndash;Sun &middot; 5&ndash;9</span>
+        </div>
         <div class="meta-block">
           <span class="meta-label">Find Us</span>
           <span class="meta-value">Green Valley, Arizona</span>
@@ -156,93 +334,33 @@
     </div>
   </section>
 
-  <!-- ===== ACT 8 — THE TWIST / EGG FINALE ===== -->
-  <section class="tease" id="tease">
-    <div class="tease-stage">
-      <div class="tease-line" data-dir="up"><span class="t">But wait&hellip;</span></div>
-      <div class="tease-line" data-dir="up"><span class="t">there&rsquo;s <em>more.</em></span></div>
-      <div class="tease-line" data-dir="up"><span class="t">Something new is <em>hatching.</em></span></div>
-    </div>
-  </section>
-
+  <!-- ===== FINALE — "Stay Tuned for Big Things" ===== -->
   <section class="finale" id="finale">
     <div class="finale-bg" aria-hidden="true"></div>
-    <div class="egg-stage" id="eggStage">
-      <div class="egg-glow" id="eggGlow" aria-hidden="true"></div>
-      <img class="jb-reveal" id="jbReveal" src="assets/jerrybobs-logo.png" alt="Jerry Bob's Family Restaurant — coming soon to Brindi's">
-      <div class="burst" id="burst" aria-hidden="true"></div>
-
-      <button class="egg-btn" id="eggBtn" aria-label="Tap the egg — a surprise is inside">
-        <svg class="egg-svg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="shellGrad" x1="0" y1="0" x2="0.35" y2="1">
-              <stop offset="0" stop-color="#fbf3e2"/>
-              <stop offset="0.5" stop-color="#f4e6cb"/>
-              <stop offset="1" stop-color="#e7d2a8"/>
-            </linearGradient>
-            <radialGradient id="shellHL" cx="0.38" cy="0.3" r="0.5">
-              <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
-              <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <ellipse class="egg-shadow" cx="150" cy="372" rx="78" ry="15"/>
-          <!-- intact egg (visible while cracking) -->
-          <path id="eggWhole" class="shell" d="M150 44 C235 58 262 152 262 246 C262 322 212 362 150 362 C88 362 38 322 38 246 C38 152 65 58 150 44 Z"/>
-          <ellipse id="eggHL" class="egg-hl" cx="120" cy="150" rx="46" ry="62" fill="url(#shellHL)"/>
-          <!-- split halves (revealed at hatch) -->
-          <path id="shellL" class="shell-half" d="M150 44 L158 86 L143 126 L160 170 L141 214 L157 258 L145 302 L153 344 L150 362 C88 362 38 322 38 246 C38 152 65 58 150 44 Z"/>
-          <path id="shellR" class="shell-half" d="M150 44 C235 58 262 152 262 246 C262 322 212 362 150 362 L153 344 L145 302 L157 258 L141 214 L160 170 L143 126 L158 86 L150 44 Z"/>
-          <!-- progressive cracks -->
-          <g id="cracks" class="cracks" fill="none">
-            <g class="crack" data-crack="1">
-              <path d="M150 72 L136 92 L151 108 L134 126"/>
-              <path d="M151 108 L168 118"/>
-            </g>
-            <g class="crack" data-crack="2">
-              <path d="M134 126 L150 150 L132 176 L150 200"/>
-              <path d="M150 150 L172 158 L186 142"/>
-            </g>
-            <g class="crack" data-crack="3">
-              <path d="M150 44 L158 86 L143 126 L160 170 L141 214 L157 258 L145 302 L153 344 L150 362"/>
-              <path d="M141 214 L116 226 M157 258 L184 250 M143 126 L120 118"/>
-            </g>
-          </g>
-        </svg>
-      </button>
-
-      <p class="egg-prompt" id="eggPrompt">Tap the egg</p>
-    </div>
-
-    <!-- payoff (revealed after hatch) -->
-    <div class="payoff" id="payoff" aria-hidden="true">
-      <span class="lockup-amp" aria-hidden="true">and</span>
-      <img class="lockup-brindis" src="assets/brindis-logo.png" alt="Brindi's Bistro">
-      <div class="flip" id="flip" role="text" aria-label="Coming soon — stay tuned">
-        <div class="flip-inner">
-          <span class="flip-face flip-front">Coming Soon</span>
-          <span class="flip-face flip-back" aria-hidden="true">Stay Tuned</span>
-        </div>
-      </div>
-      <p class="payoff-place">Green Valley, Arizona</p>
+    <div class="finale-inner">
+      <p class="kicker light finale-kicker">The Story Continues</p>
+      <h2 class="finale-line"><span class="fl">Stay tuned for</span><span class="fl"><em>big things.</em></span></h2>
+      <svg class="finale-underline" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9 C 90 3, 230 3, 317 9" fill="none"/></svg>
+      <p class="finale-place">Brindi&rsquo;s Bistro &amp; Bar &middot; Green Valley, Arizona</p>
     </div>
   </section>
 
   <!-- ===== FOOTER / UNITY BEAT ===== -->
   <footer class="foot" id="foot">
     <div class="wrap">
-      <p class="foot-line">Two kitchens. <em>One table.</em></p>
+      <p class="foot-line">From our fire to <em>your table.</em></p>
       <div class="foot-logos">
-        <img class="foot-brindis" src="assets/brindis-logo.png" alt="Brindi's Bistro">
-        <img class="foot-jb" src="assets/jerrybobs-logo.png" alt="Jerry Bob's Family Restaurant">
+        <img class="foot-brindis" src="assets/brindis-logo.png" alt="Brindi's Bistro &amp; Bar">
       </div>
       <div class="foot-meta">
+        <!-- PLACEHOLDER street address — replace with the real address before go-live -->
         <span>Green Valley, Arizona</span>
         <span class="dot">&middot;</span>
         <a href="tel:5208496188">520&middot;849&middot;6188</a>
         <span class="dot">&middot;</span>
-        <span>Est. 2024</span>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Brindi%27s%20Bistro%20%26%20Bar%20Green%20Valley%20AZ" target="_blank" rel="noopener">Get directions</a>
       </div>
-      <p class="foot-credit">Authentic Woodfire Cuisine &mdash; Turkish &amp; Mediterranean</p>
+      <p class="foot-credit">Brindi&rsquo;s Bistro &amp; Bar &mdash; Wood-Fired Mediterranean &amp; Turkish &middot; Est. 2024</p>
     </div>
   </footer>
 
@@ -250,15 +368,26 @@
 </div><!-- /smooth-content -->
 </div><!-- /smooth-wrapper -->
 
-<!-- ============ GSAP (local build) ============ -->
+<!-- ============ GSAP (local build — full plugin set) ============ -->
+<!-- load order: core first; InertiaPlugin before Draggable; CustomEase before CustomWiggle -->
 <script src="vendor/gsap/gsap.min.js"></script>
 <script src="vendor/gsap/ScrollTrigger.min.js"></script>
 <script src="vendor/gsap/ScrollSmoother.min.js"></script>
+<script src="vendor/gsap/Observer.min.js"></script>
 <script src="vendor/gsap/SplitText.min.js"></script>
 <script src="vendor/gsap/DrawSVGPlugin.min.js"></script>
 <script src="vendor/gsap/MotionPathPlugin.min.js"></script>
+<script src="vendor/gsap/MorphSVGPlugin.min.js"></script>
+<script src="vendor/gsap/Physics2DPlugin.min.js"></script>
+<script src="vendor/gsap/InertiaPlugin.min.js"></script>
+<script src="vendor/gsap/Draggable.min.js"></script>
+<script src="vendor/gsap/Flip.min.js"></script>
+<script src="vendor/gsap/TextPlugin.min.js"></script>
+<script src="vendor/gsap/ScrambleTextPlugin.min.js"></script>
+<script src="vendor/gsap/EasePack.min.js"></script>
 <script src="vendor/gsap/CustomEase.min.js"></script>
+<script src="vendor/gsap/CustomWiggle.min.js"></script>
 <script src="vendor/gsap/ScrollToPlugin.min.js"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=5"></script>
 </body>
 </html>

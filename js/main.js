@@ -144,37 +144,9 @@
   }
 
   /* ----------------------------------------------------------
-     WebAudio crack synth
-  ---------------------------------------------------------- */
-  var actx=null, muted=false;
-  function ensureAudio(){ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(actx&&actx.state==="suspended"){actx.resume();} }
-  function playCrack(intensity, big){
-    if(muted) return; ensureAudio(); if(!actx) return;
-    var t=actx.currentTime, dur=big?0.55:0.13;
-    var buf=actx.createBuffer(1, Math.floor(actx.sampleRate*dur), actx.sampleRate);
-    var data=buf.getChannelData(0);
-    for(var i=0;i<data.length;i++){ data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length, big?2:3.2); }
-    var src=actx.createBufferSource(); src.buffer=buf;
-    var bp=actx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=big?780:1500+intensity*420; bp.Q.value=0.9;
-    var g=actx.createGain(); g.gain.value=Math.min(0.5, 0.16*intensity);
-    src.connect(bp); bp.connect(g); g.connect(actx.destination); src.start(t);
-    if(big){
-      var o=actx.createOscillator(), og=actx.createGain();
-      o.type="sine"; o.frequency.setValueAtTime(523,t); o.frequency.exponentialRampToValueAtTime(880,t+0.55);
-      og.gain.setValueAtTime(0.0001,t); og.gain.exponentialRampToValueAtTime(0.22,t+0.05); og.gain.exponentialRampToValueAtTime(0.0001,t+1.0);
-      o.connect(og); og.connect(actx.destination); o.start(t); o.stop(t+1.05);
-    }
-  }
-
-  /* ----------------------------------------------------------
-     UI: sound toggle + menu modal + scroll progress
+     UI: menu modal + scroll progress
   ---------------------------------------------------------- */
   function wireUI(){
-    var st=document.getElementById("soundToggle");
-    st.addEventListener("click", function(){
-      muted=!muted; st.setAttribute("aria-pressed", String(muted)); if(!muted) ensureAudio();
-    });
-
     var modal=document.getElementById("menuModal");
     document.getElementById("openMenu").addEventListener("click", function(){
       modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
@@ -199,21 +171,24 @@
   /* ----------------------------------------------------------
      Embers
   ---------------------------------------------------------- */
+  // Physics2D embers — each spark launches up from the hearth floor with real
+  // velocity + buoyant (negative) gravity, drifts, then fades and re-launches.
   function embers(sel, n){
     if(reduced) return;
     var c=document.querySelector(sel); if(!c) return;
     for(var i=0;i<n;i++){
       var e=document.createElement("i"); e.className="ember";
-      var s=gsap.utils.random(3,8); e.style.width=e.style.height=s+"px";
-      e.style.left=gsap.utils.random(0,100)+"%"; c.appendChild(e);
+      var s=gsap.utils.random(2,7); e.style.width=e.style.height=s+"px";
+      c.appendChild(e);
       (function(node){
         function fly(){
-          gsap.set(node,{y:0,opacity:0,scale:gsap.utils.random(.6,1.2)});
-          gsap.timeline({onComplete:fly, delay:gsap.utils.random(0,1.5)})
-            .to(node,{opacity:gsap.utils.random(.4,.85),duration:.8})
-            .to(node,{y:-gsap.utils.random(window.innerHeight*0.55, window.innerHeight*1.05),
-                      x:"+="+gsap.utils.random(-70,70), duration:gsap.utils.random(4,9), ease:"none"},0)
-            .to(node,{opacity:0,duration:1.4},"-=1.6");
+          gsap.set(node,{x:gsap.utils.random(0,c.offsetWidth), y:c.offsetHeight+12,
+            opacity:0, scale:gsap.utils.random(.55,1.15)});
+          gsap.timeline({onComplete:fly, delay:gsap.utils.random(0,2.6)})
+            .to(node,{opacity:gsap.utils.random(.35,.85),duration:.7},0)
+            .to(node,{duration:gsap.utils.random(4.5,8.5), ease:"none",
+              physics2D:{velocity:gsap.utils.random(55,140), angle:gsap.utils.random(-104,-76), gravity:-26}},0)
+            .to(node,{opacity:0,duration:1.6},"-=1.8");
         }
         gsap.delayedCall(gsap.utils.random(0,6), fly);
       })(e);
@@ -284,8 +259,17 @@
         tl.to(l,{opacity:0,duration:.18}, i+0.85);
       }
     });
-    gsap.to(".fire-glow",{yPercent:-12,opacity:.75,ease:"none",
+    gsap.to(".fire-glow",{yPercent:-12,ease:"none",
       scrollTrigger:{trigger:".fire",start:"top bottom",end:"bottom top",scrub:true}});
+    // flame flicker (CustomWiggle) + a wood-fired oven temperature count-up
+    CustomWiggle.create("flicker",{wiggles:10,type:"random"});
+    gsap.to(".fire-glow",{opacity:.74,duration:4,ease:"flicker",repeat:-1});
+    var temp={v:0};
+    ScrollTrigger.create({trigger:".fire",start:"top 72%",once:true,onEnter:function(){
+      gsap.to(temp,{v:950,duration:2.2,ease:"power2.out",onUpdate:function(){
+        var el=document.getElementById("ovenTemp"); if(el) el.textContent=Math.round(temp.v)+"°";
+      }});
+    }});
   }
 
   function mezze(){
@@ -330,9 +314,13 @@
     });
   }
 
-  function flatReveals(){
-    reveal(".flat .kicker");
-    splitTitle(".flat .sect-title");
+  function lunchReveals(){
+    reveal(".lunch .kicker");
+    splitTitle(".lunch-head .sect-title");
+    reveal(".lunch-head .sect-lede",{y:22});
+    reveal(".scene-toggle",{y:16});
+    reveal(".scene-stage",{y:26});
+    reveal(".lunch-sub",{y:18});
     gsap.utils.toArray(".tag-list li").forEach(function(li,i){
       gsap.from(li,{opacity:0,scale:.85,y:14,duration:.6,ease:"brindi",
         scrollTrigger:{trigger:".tag-list",start:"top 88%"},delay:i*.06});
@@ -341,6 +329,90 @@
       gsap.from(li,{opacity:0,x:24,duration:.7,ease:"brindi",
         scrollTrigger:{trigger:li,start:"top 92%"}});
     });
+  }
+
+  // LUNCH ⇆ DINNER — the same scene physically rearranges (Flip) between a bright
+  // quick-lunch state and a candlelit dinner state. Works instantly under reduced motion.
+  function lunchToggle(){
+    var scene=document.getElementById("lunchScene"); if(!scene) return;
+    var btns=scene.querySelectorAll(".lt-btn");
+    var COPY={
+      lunch:{chip:"Midday", head:"Wood-fired in ~90 seconds.",
+        sub:"Fast and casual on our big misted patio — flatbreads ready in minutes.",
+        price:"Flatbreads · $12–15"},
+      dinner:{chip:"Evening", head:"Lingering, by candlelight.",
+        sub:"The full Mediterranean table — wine, sangria & live music on the patio.",
+        price:"Entrées · $20–26"}
+    };
+    function setMode(mode){
+      if(scene.dataset.mode===mode) return;
+      var targets=scene.querySelectorAll(".scene-media,.scene-copy");
+      var doFlip = !reduced && window.Flip;
+      var state = doFlip ? Flip.getState(targets) : null;
+      scene.dataset.mode=mode;
+      scene.classList.toggle("is-dinner", mode==="dinner");
+      var c=COPY[mode];
+      scene.querySelector("#sceneChip").textContent=c.chip;
+      scene.querySelector("#sceneHeadline").textContent=c.head;
+      scene.querySelector("#sceneSub").textContent=c.sub;
+      scene.querySelector("#scenePrice").textContent=c.price;
+      btns.forEach(function(b){ var on=b.dataset.mode===mode;
+        b.classList.toggle("is-on",on); b.setAttribute("aria-selected",String(on)); });
+      if(doFlip){
+        Flip.from(state,{duration:.7,ease:"power3.inOut",absolute:true,
+          onEnter:function(el){ return gsap.fromTo(el,{opacity:0},{opacity:1,duration:.4}); }});
+      }
+    }
+    btns.forEach(function(b){ b.addEventListener("click", function(){ setMode(b.dataset.mode); }); });
+  }
+
+  // MorphSVG: a round of dough "bakes" into a charred, irregular wood-fired flatbread as you scroll
+  function lunchMorph(){
+    if(reduced || !window.MorphSVGPlugin) return;
+    gsap.to("#breadMorph",{morphSVG:{shape:"#breadCooked",type:"rotational"}, fill:"#c2683d",
+      ease:"none", scrollTrigger:{trigger:"#lunch",start:"top 62%",end:"center 58%",scrub:1}});
+  }
+
+  /* ----------------------------------------------------------
+     The Experience — reveals, music equalizer, draggable gallery
+  ---------------------------------------------------------- */
+  function experienceAct(){
+    splitTitle(".exp-head .sect-title");
+    reveal(".exp-head .kicker");
+    reveal(".exp-head .sect-lede",{y:22});
+    gsap.utils.toArray(".g-card").forEach(function(card,i){
+      gsap.from(card,{opacity:0,y:38,duration:.8,ease:"brindi",delay:i*.06,
+        scrollTrigger:{trigger:"#gallery",start:"top 84%"}});
+    });
+    reveal(".gallery-hint",{y:10});
+    equalizer();
+    ambianceGallery();
+  }
+  function equalizer(){
+    if(reduced) return;
+    gsap.utils.toArray(".equalizer i").forEach(function(bar,i){
+      gsap.to(bar,{scaleY:gsap.utils.random(1.7,3.4),duration:gsap.utils.random(.34,.62),
+        ease:"sine.inOut",yoyo:true,repeat:-1,delay:i*.08});
+    });
+  }
+  // one Draggable + Inertia gallery (axis-locked so it never fights vertical scroll;
+  // disables the touch normalizer while dragging — the same idiom the menu modal uses)
+  function ambianceGallery(){
+    var track=document.getElementById("galleryTrack");
+    var viewport=document.getElementById("galleryViewport");
+    if(!track||!viewport) return;
+    if(reduced || !window.Draggable) return;   // CSS gives a native scroll-snap fallback
+    function bounds(){ return { minX:Math.min(0, viewport.offsetWidth - track.scrollWidth), maxX:0 }; }
+    var inst=Draggable.create(track,{
+      type:"x", bounds:bounds(), edgeResistance:.85, dragResistance:.05, inertia:true, throwResistance:1700,
+      onPress:function(){ if(normalizer) normalizer.disable(); },
+      onRelease:function(){ if(normalizer) normalizer.enable(); },
+      onThrowComplete:function(){ if(normalizer) normalizer.enable(); }
+    })[0];
+    ScrollTrigger.addEventListener("refreshInit", function(){ if(inst) inst.applyBounds(bounds()); });
+    var hint=document.getElementById("galleryHint");
+    if(hint){ var fade=function(){ gsap.to(hint,{opacity:0,duration:.5}); track.removeEventListener("pointerdown",fade); };
+      track.addEventListener("pointerdown",fade); }
   }
 
   function sweetsReveals(){
@@ -366,19 +438,6 @@
     reveal(".btn-menu",{y:18});
   }
 
-  function teaseStory(){
-    var lines=gsap.utils.toArray(".tease-line");
-    var tl=gsap.timeline({scrollTrigger:{trigger:".tease",start:"top top",
-      end:"+="+(lines.length*90)+"%",pin:true,scrub:1,anticipatePin:1}});
-    lines.forEach(function(l,i){
-      var w=new SplitText(l.querySelector(".t"),{type:"words",mask:"words"}).words;
-      tl.fromTo(l,{opacity:0},{opacity:1,duration:.18},i);
-      tl.fromTo(w,{yPercent:110},{yPercent:0,stagger:.05,duration:.55,ease:"brindi"},i+0.02);
-      tl.to(w,{yPercent:-110,stagger:.03,duration:.45},i+0.74);
-      tl.to(l,{opacity:0,duration:.16},i+0.86);
-    });
-  }
-
   function footReveals(){
     splitTitle(".foot-line");
     reveal(".foot-logos",{y:30});
@@ -386,115 +445,25 @@
     reveal(".foot-credit");
   }
 
-  /* ----------------------------------------------------------
-     EGG FINALE
-  ---------------------------------------------------------- */
-  function spawnSparks(){
-    var burst=document.getElementById("burst");
-    var colors=["#F2B441","#E4BB6A","#C2683D","#ffffff","#7A2E48"];
-    for(var i=0;i<30;i++){
-      var s=document.createElement("i"); s.className="spark";
-      var sz=gsap.utils.random(5,14); s.style.width=s.style.height=sz+"px";
-      s.style.background=colors[i%colors.length]; burst.appendChild(s);
-      var ang=Math.random()*Math.PI*2, dist=gsap.utils.random(90,280);
-      (function(node){
-        gsap.fromTo(node,{x:0,y:0,opacity:1,scale:1},
-          {x:Math.cos(ang)*dist, y:Math.sin(ang)*dist-40, opacity:0, scale:0,
-           rotation:gsap.utils.random(-200,200), duration:gsap.utils.random(.9,1.7),
-           ease:"power2.out", onComplete:function(){ node.remove(); }});
-      })(s);
-    }
+  // ScrambleText: the lunch & dinner hours "decode" into place when the reservations block enters
+  function tableHours(){
+    if(reduced || !window.ScrambleTextPlugin) return;
+    gsap.utils.toArray(".table .hours").forEach(function(el,i){
+      var txt=el.textContent;
+      gsap.to(el,{duration:1.5, ease:"none", delay:i*0.12,
+        scrambleText:{text:txt, chars:"upperCase", revealDelay:0.35, speed:0.5},
+        scrollTrigger:{trigger:".table-meta", start:"top 82%", once:true}});
+    });
   }
 
-  function initEgg(){
-    var btn=document.getElementById("eggBtn");
-    var cracks=gsap.utils.toArray("#cracks .crack");
-    gsap.set("#cracks",{opacity:1});
-    try{ gsap.set("#cracks path",{drawSVG:0}); }catch(e){ gsap.set("#cracks",{opacity:0}); }
-    gsap.set(["#shellL","#shellR"],{opacity:0});
-    var prompt=document.getElementById("eggPrompt");
-    var prompts=["Crack it open…","Again…","One more…"];
-    var taps=0, MAX=3, done=false, idle=[];
-
-    function startIdle(){
-      if(reduced) return;
-      idle.push(gsap.to(btn,{y:-9,duration:2.2,ease:"sine.inOut",yoyo:true,repeat:-1}));
-      idle.push(gsap.to(prompt,{opacity:.45,duration:1.2,ease:"sine.inOut",yoyo:true,repeat:-1}));
-    }
-    function stopIdle(){ idle.forEach(function(t){t.kill();}); idle=[]; gsap.set(btn,{y:0}); }
-
-    ScrollTrigger.create({trigger:".finale", start:"top 55%", once:true, onEnter:function(){
-      if(reduced){ gsap.set(".egg-stage",{opacity:1}); gsap.set(prompt,{opacity:1}); return; }
-      gsap.fromTo(".egg-stage",{scale:.85,opacity:0,y:40},{scale:1,opacity:1,y:0,duration:1.2,ease:"brindi"});
-      gsap.fromTo(prompt,{opacity:0},{opacity:1,duration:1,delay:.7,onComplete:startIdle});
-    }});
-
-    function tap(){
-      if(done) return;
-      ensureAudio();
-      if(reduced){ hatch(); return; }
-      taps++; stopIdle(); startIdle();
-      playCrack(0.5+taps*0.25, false);
-      var grp=cracks[taps-1];
-      if(grp){
-        try{ gsap.to(grp.querySelectorAll("path"),{drawSVG:"100%",duration:.45,ease:"power2.out",stagger:.05}); }
-        catch(e){ gsap.to(grp,{opacity:1,duration:.3}); }
-      }
-      gsap.fromTo(btn,{rotation:0},{keyframes:{rotation:[-4,4,-2,1,0]},duration:.42,ease:"power2.out"});
-      gsap.fromTo(".egg-svg",{scale:1},{scale:1.045,duration:.1,yoyo:true,repeat:1});
-      if(taps>=MAX){ hatch(); }
-      else { prompt.textContent=prompts[taps] || "Again…"; }
-    }
-    btn.addEventListener("click", tap);
-
-    function hatch(){
-      if(done) return;
-      done=true; btn.classList.add("spent"); stopIdle();
-      gsap.killTweensOf(prompt); gsap.set(btn,{y:0,rotation:0});
-      playCrack(1.0, true);
-      var stage=document.querySelector(".egg-stage");
-      var logoH=document.getElementById("jbReveal").offsetHeight || 150;
-      var tl=gsap.timeline();
-      tl.set(["#shellL","#shellR"],{opacity:1})
-        .set(["#eggWhole","#eggHL","#cracks"],{opacity:0},"<")
-        .to("#shellL",{x:-135,y:120,rotation:-58,opacity:0,duration:1.0,ease:"power2.in"},0)
-        .to("#shellR",{x:135,y:120,rotation:58,opacity:0,duration:1.0,ease:"power2.in"},0)
-        .to(".egg-shadow",{opacity:0,duration:.5},.25)   // clear the leftover shell shadow
-        .fromTo("#eggGlow",{scale:.2,opacity:0},{scale:1.05,opacity:1,duration:.8,ease:"brindi"},.1)
-        .to("#eggGlow",{opacity:.45,scale:1,duration:1.4},.9)
-        .add(spawnSparks,.18)
-        .to(prompt,{opacity:0,duration:.25},.1)
-        .fromTo("#jbReveal",{scale:0,opacity:0,y:24},
-                {scale:1,opacity:1,y:0,duration:1.2,ease: reduced?"power3.out":"elastic.out(1,0.55)"},.32)
-        // collapse the tall egg stage so the JB logo tucks just above the "&" lockup
-        .to(stage,{height:logoH+20,duration: reduced?0.001:1.0,ease:"brindi"},1.25);
-      if(!reduced){ tl.to("#jbReveal",{y:-9,duration:2.8,ease:"sine.inOut",yoyo:true,repeat:-1},2.0); }
-      tl.add(revealPayoff,2.35);
-    }
-
-    function revealPayoff(){
-      var p=document.getElementById("payoff"); p.setAttribute("aria-hidden","false");
-      gsap.set(p,{opacity:1});
-      // the hatched Jerry Bob's logo (above) + "&" + white Brindi's wordmark = the partnership lockup
-      var tl=gsap.timeline({defaults:{ease:"brindi"}});
-      tl.from(".lockup-amp",{opacity:0,scale:.6,duration:.5})
-        .from(".lockup-brindis",{opacity:0,y:18,duration:.9},"-=.1")
-        .from(".flip",{opacity:0,y:14,duration:.7},"-=.3")
-        .from(".payoff-place",{opacity:0,y:10,duration:.7},"-=.4")
-        .add(startFlip,"-=.1");
-      if(!reduced) ScrollTrigger.refresh();
-    }
-
-    // Coming Soon <-> Stay Tuned flip card, looping (static under reduced motion)
-    function startFlip(){
-      if(reduced) return;
-      var inner=document.querySelector(".flip-inner");
-      if(!inner) return;
-      gsap.set(inner,{rotationX:0});
-      gsap.timeline({repeat:-1})
-        .to(inner,{rotationX:180,duration:.8,ease:"power3.inOut",delay:2.0})
-        .to(inner,{rotationX:360,duration:.8,ease:"power3.inOut",delay:2.0});
-    }
+  // Finale — "Stay tuned for big things" rises in, underline draws, place fades up
+  function finaleAct(){
+    reveal("#finale .finale-kicker",{y:16});
+    gsap.from("#finale .fl",{yPercent:60,opacity:0,duration:1.1,ease:"brindi",stagger:.14,
+      scrollTrigger:{trigger:"#finale",start:"top 72%"}});
+    gsap.from("#finale .finale-underline path",{drawSVG:"0%",duration:1.2,ease:"brindi",
+      scrollTrigger:{trigger:"#finale",start:"top 56%"}});
+    reveal("#finale .finale-place",{y:12});
   }
 
   /* ----------------------------------------------------------
@@ -509,16 +478,61 @@
       .to(pl,{yPercent:-100,duration:1.05,ease:"power3.inOut"},1.75);
   }
 
+  /* ----------------------------------------------------------
+     Day → Night atmosphere — one fixed sky that scrubs the
+     palette dawn→deep-night while a sun/moon orb arcs across it.
+  ---------------------------------------------------------- */
+  var SKY = {
+    dawn:  {"--sky-top":"#cfe1ef","--sky-bot":"#f5e7cc","--orb-color":"#ffe7b0","--orb-glow":"#ffd07a","--star-op":0},
+    midday:{"--sky-top":"#bfe0f2","--sky-bot":"#eef0d8","--orb-color":"#ffffff","--orb-glow":"#ffe9a8","--star-op":0},
+    golden:{"--sky-top":"#f3c98b","--sky-bot":"#e89a5c","--orb-color":"#ffd27a","--orb-glow":"#ff9f57","--star-op":0.06},
+    dusk:  {"--sky-top":"#a4503f","--sky-bot":"#5a1f33","--orb-color":"#ff8a5c","--orb-glow":"#c2683d","--star-op":0.20},
+    night: {"--sky-top":"#3a1626","--sky-bot":"#1c0b13","--orb-color":"#d9c7b0","--orb-glow":"#7a2e48","--star-op":0.72},
+    deep:  {"--sky-top":"#170810","--sky-bot":"#0c0409","--orb-color":"#cdbfae","--orb-glow":"#4a1e33","--star-op":1}
+  };
+  function setStaticSky(state){
+    gsap.set(document.documentElement, state || SKY.golden);
+    var orb=document.getElementById("orb");
+    if(orb) gsap.set(orb,{xPercent:-50,yPercent:-50,
+      x:window.innerWidth*0.74, y:window.innerHeight*0.20, scale:1});
+  }
+  function dayNight(isMobile){
+    var root=document.documentElement, orb=document.getElementById("orb");
+    gsap.set(root, SKY.dawn);
+    gsap.set(orb,{xPercent:-50,yPercent:-50});
+    // place the orb on its arc for a given scroll progress (0=dawn rise → .5=zenith → 1=set)
+    function placeOrb(p){
+      var arc=4*p*(1-p);
+      gsap.set(orb,{ x:(-0.06+1.12*p)*window.innerWidth,
+                     y:(0.86-0.74*arc)*window.innerHeight,
+                     scale:1+0.45*(1-arc) });
+    }
+    placeOrb(0);
+    gsap.timeline({defaults:{ease:"none"},
+        scrollTrigger:{trigger:"#smooth-content",start:"top top",end:"bottom bottom",scrub:1.2,invalidateOnRefresh:true}})
+      .to(root, Object.assign({duration:0.28}, SKY.midday))
+      .to(root, Object.assign({duration:0.18}, SKY.golden))
+      .to(root, Object.assign({duration:0.14}, SKY.dusk))
+      .to(root, Object.assign({duration:0.18}, SKY.night))
+      .to(root, Object.assign({duration:0.22}, SKY.deep));
+    // the orb arcs bottom-left → zenith → bottom-right across the same scroll range
+    ScrollTrigger.create({trigger:"#smooth-content",start:"top top",end:"bottom bottom",scrub:1.2,
+      onUpdate:function(self){ placeOrb(self.progress); },
+      onRefresh:function(self){ placeOrb(self.progress); }});
+  }
+
   function setup(){
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, DrawSVGPlugin, MotionPathPlugin, CustomEase, ScrollToPlugin);
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Observer, SplitText, DrawSVGPlugin,
+      MotionPathPlugin, MorphSVGPlugin, Physics2DPlugin, InertiaPlugin, Draggable, Flip,
+      TextPlugin, ScrambleTextPlugin, CustomEase, CustomWiggle, ScrollToPlugin);
     CustomEase.create("brindi","M0,0,C0.16,1,0.3,1,1,1");
     gsap.defaults({ease:"brindi"});
 
     wireUI();
-    initEgg();
 
     if(reduced){
-      // content already visible via CSS; just play preloader out
+      // content already visible via CSS; set a static golden-hour sky, then lift the curtain
+      setStaticSky();
       preloaderOut(function(){ ScrollTrigger.refresh(); });
       return;
     }
@@ -530,20 +544,26 @@
     smoother=ScrollSmoother.create({wrapper:"#smooth-wrapper", content:"#smooth-content",
       smooth:1.2, effects:true, normalizeScroll:true});
     normalizer=ScrollTrigger.normalizeScroll();
-    embers("#emberHero", 16);
-    embers("#emberWood", 26);
+    var isMobile=window.matchMedia("(max-width:860px)").matches;
+    dayNight(isMobile);
+    embers("#emberHero", isMobile?8:16);
+    embers("#emberWood", isMobile?10:26);
 
     // Prepare the hero NOW so it's already blank behind the preloader, then play its
     // reveal only after the intro slide has lifted (no flash of un-animated text).
     var heroTl=heroIntro();
     heroParallax();
     fireStory();
+    lunchReveals();
+    lunchToggle();
+    lunchMorph();
     mezze();
     woodfire();
-    flatReveals();
+    experienceAct();
     sweetsReveals();
     tableReveals();
-    teaseStory();
+    tableHours();
+    finaleAct();
     footReveals();
 
     preloaderOut(function(){
