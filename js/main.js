@@ -369,8 +369,13 @@
     };
     function setMode(mode){
       if(scene.dataset.mode===mode) return;
+      var stage=scene.querySelector(".scene-stage");
       var targets=scene.querySelectorAll(".scene-media,.scene-copy");
       var doFlip = !reduced && window.Flip;
+      // Reserve the stage's height for the duration of the flip. Flip uses absolute:true,
+      // which lifts the children out of flow — without this the stage collapses to 0 and the
+      // flatbread/salad menu below jumps up and overlaps. Released on complete.
+      if(doFlip){ stage.style.height = stage.offsetHeight + "px"; }
       var state = doFlip ? Flip.getState(targets) : null;
       scene.dataset.mode=mode;
       scene.classList.toggle("is-dinner", mode==="dinner");
@@ -383,7 +388,8 @@
         b.classList.toggle("is-on",on); b.setAttribute("aria-selected",String(on)); });
       if(doFlip){
         Flip.from(state,{duration:.7,ease:"power3.inOut",absolute:true,
-          onEnter:function(el){ return gsap.fromTo(el,{opacity:0},{opacity:1,duration:.4}); }});
+          onEnter:function(el){ return gsap.fromTo(el,{opacity:0},{opacity:1,duration:.4}); },
+          onComplete:function(){ stage.style.height=""; }});
       }
     }
     btns.forEach(function(b){ b.addEventListener("click", function(){ setMode(b.dataset.mode); }); });
