@@ -168,6 +168,29 @@
     ScrollTrigger.create({ start:0, end:"max", onUpdate:function(self){ gsap.set(bar,{scaleX:self.progress}); } });
   }
 
+  // Floating, draggable ORDER NOW → Toast. A tap follows the link; a drag relocates it
+  // (Draggable suppresses the click after a real drag). Repeat guests skip straight to ordering.
+  function orderNow(){
+    var btn=document.getElementById("orderNow"); if(!btn) return;
+    gsap.set(btn,{opacity:0, x:90, scale:.85});
+    if(reduced || !window.Draggable) return;
+    var d=Draggable.create(btn,{type:"x,y", edgeResistance:.7, inertia:true, dragClickables:true,
+      onPress:function(){ if(normalizer) normalizer.disable(); },
+      onRelease:function(){ if(normalizer) normalizer.enable(); },
+      onThrowComplete:function(){ if(normalizer) normalizer.enable(); }})[0];
+    function setBounds(){ var w=btn.offsetWidth, h=btn.offsetHeight;
+      d.applyBounds({minX:-(window.innerWidth-w-28), maxX:0, minY:-(window.innerHeight-h-28), maxY:0}); }
+    setBounds(); window.addEventListener("resize", setBounds);
+  }
+  function revealOrderNow(){
+    var btn=document.getElementById("orderNow"); if(!btn) return;
+    if(reduced){ gsap.set(btn,{opacity:1, x:0, scale:1}); return; }
+    gsap.timeline()
+      .to(btn,{opacity:1, x:0, scale:1, duration:.7, ease:"back.out(1.6)"})
+      .to(btn,{scale:1.09, duration:.34, yoyo:true, repeat:3, ease:"sine.inOut"}, "+=.4")
+      .to(btn,{scale:1, duration:.2});
+  }
+
   /* ----------------------------------------------------------
      Embers
   ---------------------------------------------------------- */
@@ -445,13 +468,12 @@
     reveal(".foot-credit");
   }
 
-  // ScrambleText: the lunch & dinner hours "decode" into place when the reservations block enters
+  // Hours: a clean character-rise reveal (no scramble) when the reservations block enters
   function tableHours(){
-    if(reduced || !window.ScrambleTextPlugin) return;
+    if(reduced) return;
     gsap.utils.toArray(".table .hours").forEach(function(el,i){
-      var txt=el.textContent;
-      gsap.to(el,{duration:1.5, ease:"none", delay:i*0.12,
-        scrambleText:{text:txt, chars:"upperCase", revealDelay:0.35, speed:0.5},
+      var chars=new SplitText(el,{type:"chars"}).chars;
+      gsap.from(chars,{opacity:0, yPercent:90, duration:.7, ease:"brindi", stagger:0.03, delay:i*0.12,
         scrollTrigger:{trigger:".table-meta", start:"top 82%", once:true}});
     });
   }
@@ -521,6 +543,32 @@
       onRefresh:function(self){ placeOrb(self.progress); }});
   }
 
+  // Lockpoints — when you stop scrolling NEAR a landing section, the page eases to land
+  // on it. Stays out of the way inside the pinned acts (only snaps within ~40% of a point).
+  function lockpoints(){
+    if(reduced || !smoother) return;
+    var sel=["#hero","#lunch","#woodfire","#experience","#sweets","#table","#finale","#foot"];
+    function points(){
+      var arr=[];
+      sel.forEach(function(s){ var el=document.querySelector(s); if(el) arr.push(smoother.offset(el,"top top")); });
+      return arr.sort(function(a,b){ return a-b; });
+    }
+    ScrollTrigger.create({
+      start:0, end:"max",
+      snap:{
+        snapTo:function(value){
+          var max=ScrollTrigger.maxScroll(window); if(!max) return value;
+          var cur=value*max, pts=points(), near=pts[0], best=Math.abs(pts[0]-cur);
+          for(var i=1;i<pts.length;i++){ var d=Math.abs(pts[i]-cur); if(d<best){ best=d; near=pts[i]; } }
+          // only snap when close to a landing — leave the pinned acts (fire, mezze) free
+          if(best > window.innerHeight*0.42) return value;
+          return near/max;
+        },
+        duration:{min:0.25, max:0.6}, delay:0.14, ease:"power2.inOut"
+      }
+    });
+  }
+
   function setup(){
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Observer, SplitText, DrawSVGPlugin,
       MotionPathPlugin, MorphSVGPlugin, Physics2DPlugin, InertiaPlugin, Draggable, Flip,
@@ -529,10 +577,12 @@
     gsap.defaults({ease:"brindi"});
 
     wireUI();
+    orderNow();
 
     if(reduced){
       // content already visible via CSS; set a static golden-hour sky, then lift the curtain
       setStaticSky();
+      revealOrderNow();
       preloaderOut(function(){ ScrollTrigger.refresh(); });
       return;
     }
@@ -565,10 +615,11 @@
     tableHours();
     finaleAct();
     footReveals();
+    lockpoints();
 
     preloaderOut(function(){
       ScrollTrigger.refresh();
-      gsap.delayedCall(.35, function(){ heroTl.play(); });
+      gsap.delayedCall(.35, function(){ heroTl.play(); revealOrderNow(); });
     });
   }
 

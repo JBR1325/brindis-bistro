@@ -45,7 +45,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/brindis-logo.png">
 
-<link rel="stylesheet" href="css/styles.css?v=5">
+<link rel="stylesheet" href="css/styles.css?v=6">
 
 <!-- ===== Restaurant structured data (Schema.org JSON-LD) =====
      PLACEHOLDER address / hours / geo / social links — fill with real data before go-live. -->
@@ -67,10 +67,10 @@
   "acceptsReservations": "True",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "PLACEHOLDER — street address",
+    "streetAddress": "180 W Continental Rd #178",
     "addressLocality": "Green Valley",
     "addressRegion": "AZ",
-    "postalCode": "PLACEHOLDER",
+    "postalCode": "85614",
     "addressCountry": "US"
   },
   "geo": {
@@ -79,10 +79,14 @@
     "longitude": "-110.9937"
   },
   "areaServed": ["Green Valley", "Sahuarita", "Tucson"],
-  "hasMenu": "https://www.brindisbistrobar.com/#menu",
+  "hasMenu": "https://www.brindisbistrobar.com/menu",
+  "potentialAction": {
+    "@type": "OrderAction",
+    "target": "https://www.toasttab.com/local/order/brindis-bistro-and-bar-180-w-continental-rd-178"
+  },
   "openingHoursSpecification": [
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "11:00", "closes": "15:00", "name": "Lunch" },
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "17:00", "closes": "21:00", "name": "Dinner" }
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday"], "opens": "11:00", "closes": "20:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "11:00", "closes": "18:00" }
   ],
   "sameAs": [
     "https://www.facebook.com/PLACEHOLDER",
@@ -114,6 +118,13 @@
 
 <div class="scroll-progress" aria-hidden="true"><i id="progressBar"></i></div>
 
+<!-- floating, draggable ORDER NOW → Toast online ordering (repeat guests can skip straight here) -->
+<a class="order-now" id="orderNow" href="https://www.toasttab.com/local/order/brindis-bistro-and-bar-180-w-continental-rd-178" target="_blank" rel="noopener" aria-label="Order online from Brindi's Bistro & Bar">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8.5h12l-1 11.5H7L6 8.5Z"/><path d="M9 8.5a3 3 0 0 1 6 0"/></svg>
+  <span>Order Now</span>
+  <i class="order-grip" aria-hidden="true"></i>
+</a>
+
 <!-- ============ MENU LIGHTBOX ============ -->
 <div class="menu-modal" id="menuModal" aria-hidden="true" role="dialog" aria-label="Full menu">
   <button class="menu-close" id="menuClose" aria-label="Close menu">&times;</button>
@@ -131,7 +142,7 @@
 <main>
 
   <!-- crawlable intro + NAP (visually hidden; the visual story is told in the acts below) -->
-  <p class="sr-only">Brindi&rsquo;s Bistro &amp; Bar is a wood-fired Mediterranean and Turkish restaurant and bar in Green Valley, Arizona. By day we serve quick wood-fired flatbread lunches on our large misted patio; by night, a full Mediterranean dinner with wine, sangria, live music, indoor dining and a cozy bar. Lunch and dinner Tuesday through Sunday. Reservations: <a href="tel:5208496188">520-849-6188</a>.</p>
+  <p class="sr-only">Brindi&rsquo;s Bistro &amp; Bar is a wood-fired Mediterranean and Turkish restaurant and bar at 180 W Continental Rd #178 in Green Valley, Arizona. By day we serve quick wood-fired flatbread lunches on our large misted patio; by night, a full Mediterranean dinner with wine, sangria, live music, indoor dining and a cozy bar. Open Tuesday through Sunday from 11am. Order online, dine in, or reserve at <a href="tel:5208496188">520-849-6188</a>.</p>
 
   <!-- ===== ACT 1 — HERO ===== -->
   <section class="hero" id="hero">
@@ -312,24 +323,25 @@
         <span class="ql line">Stay for the <em>table.</em></span>
       </blockquote>
       <div class="table-meta">
-        <!-- PLACEHOLDER hours — replace with real lunch/dinner hours before go-live -->
+        <!-- hours/address from public listings (Toast/Yelp) — please verify before go-live -->
         <div class="meta-block">
-          <span class="meta-label">Lunch</span>
-          <span class="meta-value hours">Tue&ndash;Sun &middot; 11&ndash;3</span>
+          <span class="meta-label">Tue&ndash;Sat</span>
+          <span class="meta-value hours">11am &ndash; 8pm</span>
         </div>
         <div class="meta-block">
-          <span class="meta-label">Dinner</span>
-          <span class="meta-value hours">Tue&ndash;Sun &middot; 5&ndash;9</span>
+          <span class="meta-label">Sunday</span>
+          <span class="meta-value hours">11am &ndash; 6pm</span>
         </div>
         <div class="meta-block">
           <span class="meta-label">Find Us</span>
-          <span class="meta-value">Green Valley, Arizona</span>
+          <span class="meta-value">180 W Continental Rd, Green Valley</span>
         </div>
         <div class="meta-block">
           <span class="meta-label">Reservations</span>
           <a class="meta-value" href="tel:5208496188">520&middot;849&middot;6188</a>
         </div>
       </div>
+      <p class="table-note">Closed Mondays</p>
       <button class="btn-menu" id="openMenu">View the Full Menu</button>
     </div>
   </section>
@@ -353,12 +365,11 @@
         <img class="foot-brindis" src="assets/brindis-logo.png" alt="Brindi's Bistro &amp; Bar">
       </div>
       <div class="foot-meta">
-        <!-- PLACEHOLDER street address — replace with the real address before go-live -->
-        <span>Green Valley, Arizona</span>
+        <span>180 W Continental Rd #178, Green Valley, AZ 85614</span>
         <span class="dot">&middot;</span>
         <a href="tel:5208496188">520&middot;849&middot;6188</a>
         <span class="dot">&middot;</span>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=Brindi%27s%20Bistro%20%26%20Bar%20Green%20Valley%20AZ" target="_blank" rel="noopener">Get directions</a>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Brindis%20Bistro%20Bar%20180%20W%20Continental%20Rd%20Green%20Valley%20AZ" target="_blank" rel="noopener">Get directions</a>
       </div>
       <p class="foot-credit">Brindi&rsquo;s Bistro &amp; Bar &mdash; Wood-Fired Mediterranean &amp; Turkish &middot; Est. 2024</p>
     </div>
@@ -388,6 +399,6 @@
 <script src="vendor/gsap/CustomEase.min.js"></script>
 <script src="vendor/gsap/CustomWiggle.min.js"></script>
 <script src="vendor/gsap/ScrollToPlugin.min.js"></script>
-<script src="js/main.js?v=5"></script>
+<script src="js/main.js?v=6"></script>
 </body>
 </html>

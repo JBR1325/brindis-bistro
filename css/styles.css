@@ -116,6 +116,19 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:95;background:color-mix(in srgb,var(--plum) 12%,transparent)}
 .scroll-progress i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:0 50%;
   background:linear-gradient(90deg,var(--saffron),var(--terracotta),var(--wine))}
+
+/* floating, draggable ORDER NOW button (Toast online ordering) */
+.order-now{position:fixed;z-index:98;right:20px;bottom:20px;display:inline-flex;align-items:center;gap:.55em;
+  background:#E0382C;color:#fff;font-family:var(--sans);font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  font-size:.78rem;padding:.95em 1.45em;border-radius:3em;cursor:grab;white-space:nowrap;
+  box-shadow:0 16px 36px -10px rgba(224,56,44,.7), 0 4px 12px -4px rgba(0,0,0,.32);
+  user-select:none;-webkit-user-select:none;touch-action:none;will-change:transform}
+.order-now:hover{background:#ef4a3d}
+.order-now:active{cursor:grabbing}
+.order-now svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.order-now .order-grip{width:13px;height:13px;margin-left:.05em;opacity:.65;
+  background:radial-gradient(circle,currentColor 1.1px,transparent 1.5px) 0 0/4.5px 4.5px;border-radius:2px}
+@media(max-width:560px){ .order-now{font-size:.7rem;padding:.85em 1.1em;right:14px;bottom:14px;letter-spacing:.12em} }
 /* ---------- preloader ---------- */
 .preloader{position:fixed;inset:0;z-index:100;background:var(--plum-deep);
   display:grid;place-items:center;color:var(--cream)}
@@ -387,6 +400,8 @@ a.meta-value:hover{color:var(--gold)}
   font-size:.78rem;color:var(--plum-deep);background:var(--gold);padding:1.1em 2.4em;border-radius:3em;
   transition:.4s var(--ease-brindi)}
 .btn-menu:hover{background:var(--cream);transform:translateY(-2px)}
+.table-note{margin-top:1.4rem;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--cream) 52%,transparent)}
 
 /* =========================================================
    FINALE — "Stay Tuned for Big Things"
