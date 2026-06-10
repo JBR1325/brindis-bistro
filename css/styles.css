@@ -16,8 +16,10 @@
    ========================================================= */
 @property --sky-top{syntax:'<color>';inherits:true;initial-value:#cfe1ef}
 @property --sky-bot{syntax:'<color>';inherits:true;initial-value:#f5e7cc}
-@property --orb-color{syntax:'<color>';inherits:true;initial-value:#ffe7b0}
-@property --orb-glow{syntax:'<color>';inherits:true;initial-value:#ffd07a}
+@property --orb-color{syntax:'<color>';inherits:true;initial-value:#ffd98a}
+@property --orb-glow{syntax:'<color>';inherits:true;initial-value:#ffc163}
+@property --orb-core{syntax:'<color>';inherits:true;initial-value:#fff6dc}
+@property --orb-edge{syntax:'<color>';inherits:true;initial-value:#f59b4d}
 @property --star-op{syntax:'<number>';inherits:true;initial-value:0}
 /* the lunar mask: a cut-out circle that slides across the orb (sun → crescent) */
 @property --moon-x{syntax:'<percentage>';inherits:false;initial-value:-90%}
@@ -38,8 +40,13 @@
     radial-gradient(1px 1px at 54% 40%,#fff,transparent),
     radial-gradient(1px 1px at 20% 46%,#fff,transparent)}
 .orb{position:fixed;left:0;top:0;width:clamp(64px,8vw,108px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle at 38% 36%,#fff 0%,var(--orb-color) 56%,color-mix(in srgb,var(--orb-color) 72%,#7a2e48) 100%);
-  box-shadow:0 0 50px 14px var(--orb-glow),0 0 130px 46px color-mix(in srgb,var(--orb-glow) 50%,transparent);
+  /* sun anatomy: white-hot core → body color → hot limb; all palette-driven so the
+     same disc cools into a pale moon at night */
+  background:radial-gradient(circle at 40% 38%,var(--orb-core) 0%,var(--orb-core) 16%,var(--orb-color) 54%,var(--orb-edge) 100%);
+  box-shadow:
+    0 0 22px 5px color-mix(in srgb,var(--orb-glow) 85%,#fff),
+    0 0 55px 16px var(--orb-glow),
+    0 0 140px 50px color-mix(in srgb,var(--orb-glow) 50%,transparent);
   will-change:transform;
   /* sun → crescent moon: the mask circle starts fully off-disc (--moon-x:-90%)
      and the day-night timeline slides it in as the woodfire feast begins */

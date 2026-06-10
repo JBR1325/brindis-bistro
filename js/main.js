@@ -527,13 +527,15 @@
      Day → Night atmosphere — one fixed sky that scrubs the
      palette dawn→deep-night while a sun/moon orb arcs across it.
   ---------------------------------------------------------- */
+  // Each phase also styles the orb's anatomy (core / body / limb edge / glow):
+  // blazing and warm while it's the sun, cooling to pale bone once it's the moon.
   var SKY = {
-    dawn:  {"--sky-top":"#cfe1ef","--sky-bot":"#f5e7cc","--orb-color":"#ffe7b0","--orb-glow":"#ffd07a","--star-op":0},
-    midday:{"--sky-top":"#bfe0f2","--sky-bot":"#eef0d8","--orb-color":"#ffffff","--orb-glow":"#ffe9a8","--star-op":0},
-    golden:{"--sky-top":"#f3c98b","--sky-bot":"#e89a5c","--orb-color":"#ffd27a","--orb-glow":"#ff9f57","--star-op":0.06},
-    dusk:  {"--sky-top":"#a4503f","--sky-bot":"#5a1f33","--orb-color":"#ff8a5c","--orb-glow":"#c2683d","--star-op":0.20},
-    night: {"--sky-top":"#3a1626","--sky-bot":"#1c0b13","--orb-color":"#d9c7b0","--orb-glow":"#7a2e48","--star-op":0.72},
-    deep:  {"--sky-top":"#170810","--sky-bot":"#0c0409","--orb-color":"#cdbfae","--orb-glow":"#4a1e33","--star-op":1}
+    dawn:  {"--sky-top":"#cfe1ef","--sky-bot":"#f5e7cc","--orb-core":"#fff6dc","--orb-color":"#ffd98a","--orb-edge":"#f59b4d","--orb-glow":"#ffc163","--star-op":0},
+    midday:{"--sky-top":"#bfe0f2","--sky-bot":"#eef0d8","--orb-core":"#ffffff","--orb-color":"#fff8d6","--orb-edge":"#ffd27a","--orb-glow":"#ffe9a8","--star-op":0},
+    golden:{"--sky-top":"#f3c98b","--sky-bot":"#e89a5c","--orb-core":"#fff3d0","--orb-color":"#ffc24f","--orb-edge":"#ff7e35","--orb-glow":"#ff9f57","--star-op":0.06},
+    dusk:  {"--sky-top":"#a4503f","--sky-bot":"#5a1f33","--orb-core":"#ffd9a8","--orb-color":"#ff8448","--orb-edge":"#c2451f","--orb-glow":"#d65f2e","--star-op":0.20},
+    night: {"--sky-top":"#3a1626","--sky-bot":"#1c0b13","--orb-core":"#f3ead9","--orb-color":"#d9c7b0","--orb-edge":"#b89c92","--orb-glow":"#7a2e48","--star-op":0.72},
+    deep:  {"--sky-top":"#170810","--sky-bot":"#0c0409","--orb-core":"#e9dfd0","--orb-color":"#cdbfae","--orb-edge":"#a89289","--orb-glow":"#4a1e33","--star-op":1}
   };
   function setStaticSky(state){
     gsap.set(document.documentElement, state || SKY.golden);
@@ -560,11 +562,11 @@
       .to(root, Object.assign({duration:0.14}, SKY.dusk))
       .to(root, Object.assign({duration:0.18}, SKY.night))
       .to(root, Object.assign({duration:0.22}, SKY.deep));
-    // Sun → crescent moon: as the scroll crosses into "By Night / From the Woodfire"
-    // (the late-dusk→night band of this palette timeline — measured: woodfire enters
-    // ≈ .75, "After Dark" ≈ .96), a mask circle slides across the disc — an eclipse
-    // that leaves a crescent lit toward where the sun went down.
-    skyTl.to("#orb",{"--moon-x":"32%",duration:0.18,ease:"none"},0.75);
+    // Sun → crescent moon: the eclipse begins in the golden-hour band as the
+    // woodfire approaches (measured: woodfire enters ≈ .75, "After Dark" ≈ .96)
+    // and the crescent is fully formed midway through the entrées — a mask
+    // circle slides across the disc, leaving a crescent lit toward the sunset.
+    skyTl.to("#orb",{"--moon-x":"32%",duration:0.18,ease:"none"},0.64);
     // the orb arcs bottom-left → zenith → bottom-right across the same scroll range
     ScrollTrigger.create({trigger:"#smooth-content",start:"top top",end:"bottom bottom",scrub:1.2,
       onUpdate:function(self){ placeOrb(self.progress); },
