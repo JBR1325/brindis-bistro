@@ -1,13 +1,16 @@
 /* =========================================================
-   BRINDI'S BISTRO — main.js
-   Data · rendering · GSAP scrollytelling · egg finale
+   BRINDIS BISTRO & BAR — main.js
+   Rendering · GSAP scrollytelling (menu data: js/menu-data.js)
    ========================================================= */
 (function () {
   "use strict";
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Touch-first devices get NATIVE scrolling (no ScrollSmoother/normalizeScroll):
+  // JS-driven touch scroll fights the OS momentum and feels choppy on phones.
+  var isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
   var smoother = null;
-  var normalizer = null;   // GSAP touch-scroll normalizer (created alongside the smoother)
+  var normalizer = null;   // GSAP touch-scroll normalizer (desktop only, with the smoother)
   var PHOTOS_VER = "2";    // bump when dish photos change -> cache-busts the cached image URLs
 
   /* ----------------------------------------------------------
@@ -34,43 +37,12 @@
   function svg(name){ return '<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[name]||ICONS.salad)+'</svg>'; }
 
   /* ----------------------------------------------------------
-     Menu data (real Brindi's menu)
+     Menu data — shared source of truth in js/menu-data.js
+     (MENU UPDATE: edit BOTH menu-data.js AND /menu/index.html)
   ---------------------------------------------------------- */
-  var MEZZE = [
-    {name:"Hummus",            desc:"Chickpea, olive oil, garlic, lemon &amp; tahini — classic or spiced.", price:9,  tag:"VG", icon:"bowl",     photo:"hummus.webp"},
-    {name:"Baba Ghanoush",     desc:"Roasted eggplant whipped with yogurt, tahini, garlic &amp; lemon.",     price:9,  tag:"VG", icon:"eggplant", photo:"baba-ghanoush.webp"},
-    {name:"Dolmas",            desc:"House-made grape leaves, rolled by hand around herbed rice.",           price:9,  tag:"VG", icon:"leaf",     photo:"dolmas.webp"},
-    {name:"Tabbouleh",         desc:"Cracked wheat, parsley, green onion, tomato &amp; bright lemon.",       price:9,  tag:"VG", icon:"wheat",    photo:"tabbouleh.webp"},
-    {name:"Eggplant Shakshuka",desc:"Wood-fired eggplant simmered with tomato, peppers, garlic &amp; lemon.",price:9,  tag:"VT", icon:"flame",    photo:"eggplant-shakshuka.webp"},
-    {name:"Garlic Shrimp",     desc:"Wood-fired shrimp in a glossy garlic-lemon sauce.",                    price:17, tag:"",   icon:"shrimp",   photo:"garlic-shrimp.webp"},
-    {name:"Stuffed Mushrooms", desc:"Caps filled with garlic ricotta &amp; lemon, kissed by flame.",         price:17, tag:"VT", icon:"mushroom", photo:"stuffed-mushrooms.webp"}
-  ];
-  var ENTREES = [
-    {name:"Chicken Shish Kebab", price:20, note:"Wood-fired · rice or salad · yogurt sauce"},
-    {name:"Lamb Shish Kebab",    price:22, note:"Charred over open flame"},
-    {name:"Shrimp Shish Kebab",  price:20, note:"Garlic &amp; lemon"},
-    {name:"Lamb Shank Dinner",   price:25, note:"Slow-braised until it falls from the bone"},
-    {name:"Köfte Kebab",    price:20, note:"Beef &amp; lamb meatballs"},
-    {name:"Marinated Salmon",    price:23, note:"Flame-roasted"},
-    {name:"Whole Sea Bass",      price:25, note:"Mediterranean · whole-roasted"},
-    {name:"Wood-Fired Steak",    price:26, note:"The flame at its boldest"},
-    {name:"Turkish Pasta",       price:17, note:"Farfalle, cold yogurt-garlic, hot chili oil"},
-    {name:"Pita Sandwich",       price:15, note:"Meatball, lamb or chicken · sumac salad"}
-  ];
-  var FLATBREADS = [
-    {name:"Lahmacun", price:15}, {name:"Pastrami", price:15}, {name:"Spinach &amp; Feta", price:13},
-    {name:"Veggie", price:13}, {name:"Cheese", price:12}
-  ];
-  var SALADS = [
-    {name:"House Turkish Mixed Green", desc:"Arugula, romaine, spinach, red cabbage, cucumber, tomato, walnuts &amp; pine nuts.", price:13},
-    {name:"Classic Caesar", desc:"Romaine, parmesan, croutons &amp; black pepper, yogurt or pomegranate dressing.", price:12}
-  ];
-  var SWEETS = [
-    {name:"Pistachio Baklava", desc:"Layered phyllo, pistachio &amp; honey.", price:8, icon:"baklava", photo:"pistachio-baklava.jpg"},
-    {name:"Turkish Delight",   desc:"Rose &amp; citrus lokum, dusted in sugar.", price:8, icon:"delight", photo:"turkish-delight.jpg"},
-    {name:"Rice Pudding",      desc:"Slow-cooked with cinnamon &amp; vanilla.", price:8, icon:"pudding", photo:"rice-pudding.jpg"}
-  ];
-  var DRINKS = ["Turkish Coffee","Ayran","House Hibiscus Tea","Pomegranate Tea","Fresh Lemonade"];
+  var MENU = window.BRINDIS_MENU || {};
+  var MEZZE = MENU.MEZZE || [], ENTREES = MENU.ENTREES || [], FLATBREADS = MENU.FLATBREADS || [],
+      SALADS = MENU.SALADS || [], SWEETS = MENU.SWEETS || [], DRINKS = MENU.DRINKS || [];
 
   /* ----------------------------------------------------------
      Rendering
@@ -78,7 +50,7 @@
   function el(html){ var t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; }
   function photoSlot(file, alt, ratio, icon){
     return '<div class="photo-slot '+ratio+'">'
-      + '<div class="ph">'+svg(icon)+'<span class="ph-tag">Brindi’s</span></div>'
+      + '<div class="ph">'+svg(icon)+'<span class="ph-tag">Brindis</span></div>'
       + '<img src="assets/photos/'+file+'?v='+PHOTOS_VER+'" alt="'+alt+'" loading="lazy" '
       + 'onload="this.classList.add(\'loaded\')" onerror="this.remove()">'
       + '</div>';
@@ -113,8 +85,8 @@
     });
     document.querySelector(".woodfire .wrap").appendChild(el(
       '<div class="woodfire-photos">'
-      + photoSlot("lamb-shank.jpg","Wood-fired lamb shank","r45","steak")
-      + photoSlot("sea-bass.jpg","Whole Mediterranean sea bass","r45","fish")
+      + photoSlot("kebab-cazuela.webp","Chicken shish kebab served in a traditional terracotta cazuela at Brindis Bistro &amp; Bar","r45","skewer")
+      + photoSlot("sea-bass-real.webp","Whole wood-roasted Mediterranean sea bass with charred vegetables at Brindis Bistro &amp; Bar","r45","fish")
       + '</div>'));
 
     // Flatbreads
@@ -144,26 +116,9 @@
   }
 
   /* ----------------------------------------------------------
-     UI: menu modal + scroll progress
+     UI: scroll progress (the full menu lives at /menu/ now)
   ---------------------------------------------------------- */
   function wireUI(){
-    var modal=document.getElementById("menuModal");
-    document.getElementById("openMenu").addEventListener("click", function(){
-      modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
-      if(smoother) smoother.paused(true);
-      if(normalizer) normalizer.disable();   // release touch so the tall modal scrolls natively on mobile
-      document.body.style.overflow="hidden";
-    });
-    function closeMenu(){
-      modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
-      if(smoother) smoother.paused(false);
-      if(normalizer) normalizer.enable();
-      document.body.style.overflow="";
-    }
-    document.getElementById("menuClose").addEventListener("click", closeMenu);
-    modal.addEventListener("click", function(e){ if(e.target===modal) closeMenu(); });
-    document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeMenu(); });
-
     var bar=document.getElementById("progressBar");
     ScrollTrigger.create({ start:0, end:"max", onUpdate:function(self){ gsap.set(bar,{scaleX:self.progress}); } });
   }
@@ -239,11 +194,14 @@
      Act timelines
   ---------------------------------------------------------- */
   function heroIntro(){
-    var split=new SplitText(".hero-title .line",{type:"chars"});
+    // words,chars: chars animate individually but stay grouped inside word
+    // wrappers, so lines can only break BETWEEN words (never "Cuisin / e").
+    var split=new SplitText(".hero-title .line",{type:"words,chars"});
     // Hide the hero IMMEDIATELY so it sits blank behind the preloader — this prevents
     // any flash of un-animated text when the intro curtain lifts. Returns a paused
     // timeline the caller plays once the intro slide is gone, so the text only ever
     // appears via the animation on an already-blank screen.
+    gsap.set(".site-nav",{opacity:0,y:-14});
     gsap.set(".hero-kicker",{opacity:0,y:22});
     gsap.set(".hero-logo",{opacity:0,y:36,scale:.94});
     gsap.set(split.chars,{yPercent:120,opacity:0});
@@ -254,6 +212,7 @@
       .to(".hero-logo",{opacity:1,y:0,scale:1,duration:1.5},"-=.75")
       .to(split.chars,{yPercent:0,opacity:1,stagger:.035,duration:1.2},"-=.85")
       .to(".hero-tag",{opacity:1,y:0,duration:1.1},"-=.6")
+      .to(".site-nav",{opacity:1,y:0,duration:1},"-=.7")
       .to(".scroll-cue",{opacity:1,y:0,duration:1.1},"-=.45")
       // a soft, repeating breath on the cue so the held hero gently invites a scroll
       .to(".scroll-cue",{opacity:.55,duration:1.6,ease:"sine.inOut",yoyo:true,repeat:-1},"+=.1");
@@ -289,10 +248,28 @@
     gsap.to(".fire-glow",{opacity:.74,duration:4,ease:"flicker",repeat:-1});
     var temp={v:0};
     ScrollTrigger.create({trigger:".fire",start:"top 72%",once:true,onEnter:function(){
-      gsap.to(temp,{v:950,duration:2.2,ease:"power2.out",onUpdate:function(){
+      gsap.to(temp,{v:900,duration:2.2,ease:"power2.out",onUpdate:function(){
         var el=document.getElementById("ovenTemp"); if(el) el.textContent=Math.round(temp.v)+"°";
-      }});
+      },onComplete:fireBurst});
     }});
+  }
+
+  // The moment the oven hits 900°: one ember burst from the hearth + a glow surge.
+  function fireBurst(){
+    if(reduced) return;
+    gsap.fromTo(".fire-glow",{opacity:.6},{opacity:1,duration:.32,yoyo:true,repeat:1,ease:"power2.in"});
+    var c=document.querySelector(".fire"); if(!c) return;
+    for(var i=0;i<16;i++){
+      var e=document.createElement("i"); e.className="ember";
+      var s=gsap.utils.random(3,8); e.style.width=e.style.height=s+"px";
+      c.appendChild(e);
+      gsap.set(e,{x:c.offsetWidth*gsap.utils.random(.36,.64), y:c.offsetHeight*.86,
+        opacity:gsap.utils.random(.5,.95), scale:gsap.utils.random(.6,1.2), zIndex:3});
+      gsap.timeline({onComplete:function(node){ node.remove(); }, onCompleteParams:[e]})
+        .to(e,{duration:gsap.utils.random(1.6,2.8), ease:"none",
+          physics2D:{velocity:gsap.utils.random(190,330), angle:gsap.utils.random(-122,-58), gravity:140}},0)
+        .to(e,{opacity:0,duration:.7},"-=.7");
+    }
   }
 
   function mezze(){
@@ -361,8 +338,8 @@
     var btns=scene.querySelectorAll(".lt-btn");
     var COPY={
       lunch:{chip:"Midday", head:"Wood-fired in ~90 seconds.",
-        sub:"Fast and casual on our big misted patio — flatbreads ready in minutes.",
-        price:"Flatbreads · $12–15"},
+        sub:"Fast and casual on our big misted patio — pides and flatbreads ready in minutes.",
+        price:"Pides & Flatbreads · $12–15"},
       dinner:{chip:"Evening", head:"Lingering, by candlelight.",
         sub:"The full Mediterranean table — wine, sangria & live music on the patio.",
         price:"Entrées · $20–26"}
@@ -393,6 +370,14 @@
       }
     }
     btns.forEach(function(b){ b.addEventListener("click", function(){ setMode(b.dataset.mode); }); });
+    // arrow keys move between the Lunch / Dinner tabs (WAI-ARIA tablist pattern)
+    scene.querySelector(".scene-toggle").addEventListener("keydown", function(e){
+      if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+      e.preventDefault();
+      var mode = e.key==="ArrowLeft" ? "lunch" : "dinner";
+      setMode(mode);
+      scene.querySelector('.lt-btn[data-mode="'+mode+'"]').focus();
+    });
   }
 
   // MorphSVG: a round of dough "bakes" into a charred, irregular wood-fired flatbread as you scroll
@@ -442,6 +427,17 @@
     var hint=document.getElementById("galleryHint");
     if(hint){ var fade=function(){ gsap.to(hint,{opacity:0,duration:.5}); track.removeEventListener("pointerdown",fade); };
       track.addEventListener("pointerdown",fade); }
+    // keyboard panning for the focused gallery (left/right arrows, one card at a time)
+    viewport.addEventListener("keydown", function(e){
+      if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+      e.preventDefault();
+      var card=track.querySelector(".g-card");
+      var step=card ? card.offsetWidth+24 : 320;
+      var b=bounds();
+      var cur=gsap.getProperty(track,"x");
+      var next=gsap.utils.clamp(b.minX, 0, cur + (e.key==="ArrowLeft" ? step : -step));
+      gsap.to(track,{x:next,duration:.5,ease:"brindi",onUpdate:function(){ if(inst) inst.update(); }});
+    });
   }
 
   function sweetsReveals(){
@@ -459,7 +455,7 @@
   function tableReveals(){
     reveal(".table .kicker");
     gsap.utils.toArray(".table-quote .ql").forEach(function(q,i){
-      var ch=new SplitText(q,{type:"chars"}).chars;
+      var ch=new SplitText(q,{type:"words,chars"}).chars;   // word-safe wrapping on small screens
       gsap.from(ch,{yPercent:110,opacity:0,stagger:.025,duration:.9,ease:"brindi",
         scrollTrigger:{trigger:".table-quote",start:"top 78%"},delay:i*.12});
     });
@@ -484,7 +480,8 @@
     });
   }
 
-  // Finale — "Stay tuned for big things" rises in, underline draws, place fades up
+  // Finale — "Stay tuned for big things" rises in, underline draws, place fades up,
+  // and a faint "B" constellation traces itself into the stars.
   function finaleAct(){
     reveal("#finale .finale-kicker",{y:16});
     gsap.from("#finale .fl",{yPercent:60,opacity:0,duration:1.1,ease:"brindi",stagger:.14,
@@ -492,18 +489,38 @@
     gsap.from("#finale .finale-underline path",{drawSVG:"0%",duration:1.2,ease:"brindi",
       scrollTrigger:{trigger:"#finale",start:"top 56%"}});
     reveal("#finale .finale-place",{y:12});
+    gsap.from(".finale-constellation .c-line",{drawSVG:"0%",duration:2.2,ease:"power1.inOut",
+      scrollTrigger:{trigger:"#finale",start:"top 60%"}});
+    gsap.from(".finale-constellation .c-stars circle",{opacity:0,scale:0,transformOrigin:"50% 50%",
+      stagger:.14,duration:.5,ease:"back.out(2)",
+      scrollTrigger:{trigger:"#finale",start:"top 60%"}});
+  }
+
+  // Voices — guest quotes drift up as the night settles
+  function voicesReveal(){
+    reveal(".voices-kicker",{y:14});
+    gsap.from(".voices .quote-card",{opacity:0,y:30,stagger:.12,duration:.85,ease:"brindi",
+      scrollTrigger:{trigger:".voices",start:"top 80%"}});
   }
 
   /* ----------------------------------------------------------
      Boot
   ---------------------------------------------------------- */
+  function seenThisSession(){
+    try{ return sessionStorage.getItem("brindis-seen")==="1"; }catch(e){ return false; }
+  }
+  function markSeen(){ try{ sessionStorage.setItem("brindis-seen","1"); }catch(e){} }
+
   function preloaderOut(after){
     var pl=document.getElementById("preloader");
-    // Let the wordmark draw in, hold a beat so it reads, then lift the curtain smoothly.
+    // Repeat visit this session? Skip the curtain entirely — straight to the food.
+    if(seenThisSession()){ pl.style.display="none"; if(after) after(); return; }
+    markSeen();
+    // Let the wordmark draw in, hold a short beat so it reads, then lift the curtain.
     gsap.timeline({defaults:{ease:"brindi"}, onComplete:function(){ pl.style.display="none"; if(after) after(); }})
-      .to("#preRule",{scaleX:1,duration:1.1},0)
-      .to(".pre-inner",{opacity:0,y:-12,duration:.7},1.5)
-      .to(pl,{yPercent:-100,duration:1.05,ease:"power3.inOut"},1.75);
+      .to("#preRule",{scaleX:1,duration:.75},0)
+      .to(".pre-inner",{opacity:0,y:-12,duration:.55},1.0)
+      .to(pl,{yPercent:-100,duration:.9,ease:"power3.inOut"},1.2);
   }
 
   /* ----------------------------------------------------------
@@ -536,13 +553,18 @@
                      scale:1+0.45*(1-arc) });
     }
     placeOrb(0);
-    gsap.timeline({defaults:{ease:"none"},
-        scrollTrigger:{trigger:"#smooth-content",start:"top top",end:"bottom bottom",scrub:1.2,invalidateOnRefresh:true}})
-      .to(root, Object.assign({duration:0.28}, SKY.midday))
+    var skyTl = gsap.timeline({defaults:{ease:"none"},
+        scrollTrigger:{trigger:"#smooth-content",start:"top top",end:"bottom bottom",scrub:1.2,invalidateOnRefresh:true}});
+    skyTl.to(root, Object.assign({duration:0.28}, SKY.midday))
       .to(root, Object.assign({duration:0.18}, SKY.golden))
       .to(root, Object.assign({duration:0.14}, SKY.dusk))
       .to(root, Object.assign({duration:0.18}, SKY.night))
       .to(root, Object.assign({duration:0.22}, SKY.deep));
+    // Sun → crescent moon: as the scroll crosses into "By Night / From the Woodfire"
+    // (the late-dusk→night band of this palette timeline — measured: woodfire enters
+    // ≈ .75, "After Dark" ≈ .96), a mask circle slides across the disc — an eclipse
+    // that leaves a crescent lit toward where the sun went down.
+    skyTl.to("#orb",{"--moon-x":"32%",duration:0.18,ease:"none"},0.75);
     // the orb arcs bottom-left → zenith → bottom-right across the same scroll range
     ScrollTrigger.create({trigger:"#smooth-content",start:"top top",end:"bottom bottom",scrub:1.2,
       onUpdate:function(self){ placeOrb(self.progress); },
@@ -553,7 +575,7 @@
   // on it. Stays out of the way inside the pinned acts (only snaps within ~40% of a point).
   function lockpoints(){
     if(reduced || !smoother) return;
-    var sel=["#hero","#lunch","#woodfire","#experience","#sweets","#table","#finale","#foot"];
+    var sel=["#hero","#lunch","#woodfire","#experience","#sweets","#voices","#table","#finale","#foot"];
     function points(){
       var arr=[];
       sel.forEach(function(s){ var el=document.querySelector(s); if(el) arr.push(smoother.offset(el,"top top")); });
@@ -577,8 +599,8 @@
 
   function setup(){
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Observer, SplitText, DrawSVGPlugin,
-      MotionPathPlugin, MorphSVGPlugin, Physics2DPlugin, InertiaPlugin, Draggable, Flip,
-      TextPlugin, ScrambleTextPlugin, CustomEase, CustomWiggle, ScrollToPlugin);
+      MorphSVGPlugin, Physics2DPlugin, InertiaPlugin, Draggable, Flip,
+      CustomEase, CustomWiggle);
     CustomEase.create("brindi","M0,0,C0.16,1,0.3,1,1,1");
     gsap.defaults({ease:"brindi"});
 
@@ -593,17 +615,20 @@
       return;
     }
 
-    // Mobile jitter fixes: ignoreMobileResize stops ScrollTrigger refreshing (and jumping)
-    // when the address bar shows/hides; normalizeScroll lets GSAP drive touch scrolling so the
-    // pinned + horizontal sections stay rock-solid instead of fighting native momentum.
+    // ignoreMobileResize stops ScrollTrigger refreshing (and jumping) when the
+    // mobile address bar shows/hides.
     ScrollTrigger.config({ ignoreMobileResize:true });
-    smoother=ScrollSmoother.create({wrapper:"#smooth-wrapper", content:"#smooth-content",
-      smooth:1.2, effects:true, normalizeScroll:true});
-    normalizer=ScrollTrigger.normalizeScroll();
+    if(!isTouch){
+      // Desktop: wheel-smoothed scrolling. Phones/tablets keep NATIVE momentum —
+      // ScrollTrigger pins and scrubs work fine against native touch scroll.
+      smoother=ScrollSmoother.create({wrapper:"#smooth-wrapper", content:"#smooth-content",
+        smooth:1.2, normalizeScroll:true});
+      normalizer=ScrollTrigger.normalizeScroll();
+    }
     var isMobile=window.matchMedia("(max-width:860px)").matches;
     dayNight(isMobile);
-    embers("#emberHero", isMobile?8:16);
-    embers("#emberWood", isMobile?10:26);
+    embers("#emberHero", isTouch?5:(isMobile?8:16));
+    embers("#emberWood", isTouch?8:(isMobile?10:26));
 
     // Prepare the hero NOW so it's already blank behind the preloader, then play its
     // reveal only after the intro slide has lifted (no flash of un-animated text).
@@ -617,6 +642,7 @@
     woodfire();
     experienceAct();
     sweetsReveals();
+    voicesReveal();
     tableReveals();
     tableHours();
     finaleAct();
@@ -634,7 +660,7 @@
     var started=false;
     function go(){ if(started) return; started=true;
       try{ setup(); }
-      catch(err){ console.error("Brindi init error:", err);
+      catch(err){ console.error("Brindis init error:", err);
         var pl=document.getElementById("preloader"); if(pl) pl.style.display="none"; }
     }
     // wait for fonts so SplitText measures correctly; fall back after 1.6s

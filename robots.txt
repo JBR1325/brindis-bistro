@@ -1,4 +1,4 @@
-# Brindi's Bistro & Bar — robots.txt
+# Brindis Bistro & Bar — robots.txt
 # BUILD PHASE: indexing is blocked while the site uses placeholder content.
 User-agent: *
 Disallow: /
